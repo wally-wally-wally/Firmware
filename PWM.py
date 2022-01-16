@@ -3,15 +3,16 @@
 
 import RPi.GPIO as GPIO
 
-def setPin(pin, frequency):
-    GPIO.setup(pin, GPIO.OUT)
-    return GPIO.PWM(pin, frequency)    #this value is pwm in subsequent function calls
+class signal:
+    def setPin(signal, pin, frequency):
+        GPIO.setup(pin, GPIO.OUT)
+        signal.pwm = GPIO.PWM(pin, frequency)
 
-def begin(pwm, dutyCycle):             #dutyCycle is in % (write 50 for 50%)
-    pwm.start(dutyCycle)
+    def begin(signal, dutyCycle):             #dutyCycle is in % (write 50 for 50%)
+        signal.pwm.start(dutyCycle)
 
-def setDutyCycle(pwm, dutyCycle):
-    pwm.ChangeDutyCycle(dutyCycle)
+    def setDutyCycle(signal, dutyCycle):
+        signal.pwm.ChangeDutyCycle(dutyCycle)
 
-def stop(pwm):
-    pwm.stop()
+    def stop(signal):
+        signal.pwm.stop()
