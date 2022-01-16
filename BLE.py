@@ -7,27 +7,26 @@
 
 import bluetooth
 
-def init():
-    server = bluetooth.BluetoothSocket( bluetooth.RFCOMM )
-    port = 1
-    server.bind(("",port))
-    return server            #must be stored and passed
+class socket:
+    def __init__(socket):
+        socket.server = bluetooth.BluetoothSocket( bluetooth.RFCOMM )
+        port = 1
+        socket.server.bind(("",port))
 
-def advertise(server):
-    server.listen(1)
+    def advertise(socket):
+        socket.server.listen(1)
 
-def connect(server):
-    client,address = server.accept()
-    print ("Accepted connection from ",address)
-    return client            #must be stored and passed
+    def connect(socket):
+        socket.client, address = socket.server.accept()
+        print ("Accepted connection from ",address)
 
-def read(client):
-    return client.recv(1024) #returns data read
+    def read(socket):
+        return socket.client.recv(1024) #returns data read
 
-def write(client, data):
-    client.send(data)
+    def write(socket, data):
+        socket.client.send(data)
 
-def disconnect(client, server):
-    client.close()
-    server.close()
+    def disconnect(socket):
+        socket.client.close()
+        socket.server.close()
 
