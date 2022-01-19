@@ -7,7 +7,7 @@
 
 import bluetooth
 
-class socket:
+class Socket:
     def __init__(socket):
         socket.server = bluetooth.BluetoothSocket( bluetooth.RFCOMM )
         port = 1
@@ -18,7 +18,7 @@ class socket:
 
     def connect(socket):
         socket.client, address = socket.server.accept()
-        print ("Accepted connection from ",address)
+        print ("Accepted connection from", address)
 
     def read(socket):
         return socket.client.recv(1024) #returns data read
