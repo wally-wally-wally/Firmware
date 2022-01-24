@@ -2,20 +2,19 @@ import GPIO
 import PWM
 
 class Motor:
-    def __init__(self, pwmPin, directionPin):
-        self.pwmCtrl = PWM.Signal()
+    def __init__(self, pwmPin, directionPin, frequency):
+        GPIO.init()
         self.pwmPin = pwmPin
         self.directionPin = directionPin
         self.speed = 0
         GPIO.setPin(self.directionPin, 'OUT', 'NONE')
 
-    def setFrequency(self, frequency):
         if frequency < 15000:
             raise ValueError("Frequency is too low, please set it to a value between 15000 and 25000")
         elif frequency > 25000:
             raise ValueError("Frequency is too high, please set it to a value between 15000 and 25000")
         else:
-            self.pwmCtrl.setPin(self.pwmPin, frequency)
+            self.pwmCtrl = PWM.Signal(pwmPin, frequency)
 
     def setDirection(self, direction):
         if direction == 'CW':
