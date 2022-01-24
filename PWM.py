@@ -2,10 +2,8 @@ import RPi.GPIO as RPi_IO
 import GPIO
 
 class Signal:
-    def __init__(self):
+    def __init__(self, pin, frequency):
         GPIO.init()
-
-    def setPin(self, pin, frequency):
         GPIO.setPin(pin, 'OUT', 'NONE')
         self.pwm = RPi_IO.PWM(pin, frequency)
 
