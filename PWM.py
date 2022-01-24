@@ -1,18 +1,19 @@
-#code works along side GPIO.py
-#the init in GPIO.py must be called before any of these functions are called
+import RPi.GPIO as RPi_IO
+import GPIO
 
-import RPi.GPIO as GPIO
+class Signal:
+    def __init__(self):
+        GPIO.init()
 
-class signal:
-    def setPin(signal, pin, frequency):
-        GPIO.setup(pin, GPIO.OUT)
-        signal.pwm = GPIO.PWM(pin, frequency)
+    def setPin(self, pin, frequency):
+        GPIO.setPin(pin, 'OUT', 'NONE')
+        self.pwm = RPi_IO.PWM(pin, frequency)
 
-    def begin(signal, dutyCycle):             #dutyCycle is in % (write 50 for 50%)
-        signal.pwm.start(dutyCycle)
+    def begin(self, dutyCycle):             #dutyCycle is in % (write 50 for 50%)
+        self.pwm.start(dutyCycle)
 
-    def setDutyCycle(signal, dutyCycle):
-        signal.pwm.ChangeDutyCycle(dutyCycle)
+    def setDutyCycle(self, dutyCycle):
+        self.pwm.ChangeDutyCycle(dutyCycle)
 
-    def stop(signal):
-        signal.pwm.stop()
+    def stop(self):
+        self.pwm.stop()
