@@ -24,13 +24,13 @@ class Cell:
         count = 0
         for x in self.cells:
             GPIO.write(x, 'HIGH')
-            time.sleep(1000)
+            time.sleep(1)
 
             setAddress(BMS.cell_addr[count])
-            time.sleep(1000)
+            time.sleep(1)
 
             GPIO.write(x, 'LOW')
-            time.sleep(1000)
+            time.sleep(1)
             count+=1
 
     def setAddress(self, address):
