@@ -1,62 +1,71 @@
 import GPIO
 import i2c
+import time
 
 #Cell Addresses
-cell_addr = [0x34, 0x35, 0x36, 0x37]
+cellAddr = [0x34, 0x35, 0x36, 0x37]
 
 #DS2782 Addresses
-base_addr = 0x34
-special_reg = 0x15
-EEPROM_reg = 0x7E
-memory_reg = 0xFE
-volt_reg_msb = 0x0C
-volt_reg_lsb = 0x0D
+GAUGE_BASE_ADDR = 0x34
+SPECIAL_REG = 0x15
+EEPROM_REG = 0x7E
+MEMORY_REG = 0xFE
+VOLT_REG_MSB = 0x0C
+VOLT_REG_LSB = 0x0D
+MAX_VOLT = 4.2
+MIN_VOLT = 3.3
 
 #BQ24179 Addresses
-chg_base_addr = 0x6B
-chg_ctrl = 0xF
-chg_stat = 0x1C
+CHG_BASE_ADDR = 0x6B
+CHG_CTRL = 0xF
+CHG_STAT = 0x1C
 
 #charger status
-charging = int('011', 2)
-done_charging = int('111', 2)
+CHARGING = int('011', 2)
+DONE_CHARGING = int('111', 2)
 
 class Cell:
-    def __init__(self, cell_num, EN_PIN, i2c_channel):
-        self.en_pin = EN_PIN
-        self.i2c = i2c.I2C(i2c_channel)
-        self.address = cell_addr[cell_num-1]
+    def __init__(self, cellNum, enPin, i2cChannel):
+        self.enPin = enPin
+        self.i2c = i2c.I2C(i2cChannel)
+        self.address = cellAddr[cellNum-1]
         self.isDischarging = False
 
         GPIO.init()
-        GPIO.setPin(self.en_pin, 'OUT', 'NONE')
-        GPIO.write(self.en_pin, 'HIGH')
+        GPIO.setPin(self.enPin, 'OUT', 'NONE')
+        GPIO.write(self.enPin, 'HIGH')
 
     def readVoltage(self):                              #might need to be converted to an understandable value
-        return self.i2c.read(self.address, volt_reg_msb)
+        return self.i2c.read(self.address, VOLT_REG_MSB)
 
     def dischargeCell(self):
-        data = self.i2c.read(self.address, special_reg)
-        self.i2c.write(self.address, special_reg, (data & ~(1<<1))) #set PIO to low power mode
+        data = self.i2c.read(self.address, SPECIAL_REG)
+        self.i2c.write(self.address, SPECIAL_REG, (data & ~(1<<1))) #set PIO to low power mode
         self.isDischarging = True
         return self.isDischarging
 
     def stopDischarge(self):
-        data = self.i2c.read(self.address, special_reg)
-        self.i2c.write(self.address, special_reg, (data | 1<<1))   #set PIO back to normal mode
+        data = self.i2c.read(self.address, SPECIAL_REG)
+        self.i2c.write(self.address, SPECIAL_REG, (data | 1<<1))   #set PIO back to normal mode
         self.isDischarging = False
         return self.isDischarging
 
 class Charger:
-    def __init__(self, stat_pin, CE_pin, i2c_channel):
-        self.i2c = i2c.I2C(i2c_channel)
-        self.CE_pin = CE_PIN
-        self.stat_pin = stat_pin
+    def __init__(self, cePin, qonPin, i2cChannel):
+        self.i2c = i2c.I2C(i2cChannel)
+        self.cePin = cePin
+        self.qonPin = qonPin
         self.isCharging = False
 
         GPIO.init()
-        GPIO.setPin(self.en_pin, 'OUT', 'NONE')
+        GPIO.setPin(self.cePin, 'OUT', 'NONE')
+        GPIO.setPin(self.qonPin, 'OUT', 'NONE')
+        GPIO.write(self.qonPin, 'HIGH')
         enableCharging()
+
+    def reset(self):
+        GPIO.write(self.qonPin, 'LOW')
+        time.sleep(10)
 
     def disableDevices(self, *pins):                   #disable high current devices for charging
         for x in pins:
@@ -67,24 +76,24 @@ class Charger:
             GPIO.write(x, 'HIGH')
 
     def enableCharging(self):
-        GPIO.write(self.CE_pin, 'LOW')
-        data = self.i2c.read(chg_base_addr, chg_ctrl)
-        self.i2c.write(chg_base_addr, chg_ctrl, (data | 1<<5))
+        GPIO.write(self.cePin, 'LOW')
+        data = self.i2c.read(CHG_BASE_ADDR, CHG_CTRL)
+        self.i2c.write(CHG_BASE_ADDR, CHG_CTRL, (data | 1<<5))
 
     def disableCharging(self):
-        GPIO.write(self.CE_pin, 'HIGH')
-        data = self.i2c.read(chg_base_addr, chg_ctrl)
-        self.i2c.write(chg_base_addr, chg_ctrl, (data & ~(1<<5)))
+        GPIO.write(self.cePin, 'HIGH')
+        data = self.i2c.read(CHG_BASE_ADDR, CHG_CTRL)
+        self.i2c.write(CHG_BASE_ADDR, CHG_CTRL, (data & ~(1<<5)))
 
     def checkChargeStatus(self):                       #can be modified to include the other states
         data = readStatus()
-    if int(data) == charging:
-        self.isCharging = True
-    else:
-        self.isCharging = False
+        if int(data) == CHARGING:
+            self.isCharging = True
+        else:
+            self.isCharging = False
 
     def readStatus(self):
-        data = int(self.i2c.read(chg_base_addr, chg_stat), 2)
+        data = int(self.i2c.read(CHG_BASE_ADDR, CHG_STAT), 2)
         mask = int('00000111', 2)
 
         return bin(data & mask)
