@@ -1,12 +1,16 @@
 import GPIO
 import PWM
+import time
 
 class Motor:
+    DELAY = 0.2
+
     def __init__(self, pwmPin, directionPin, frequency):
         GPIO.init()
         self.pwmPin = pwmPin
         self.directionPin = directionPin
         self.speed = 0
+
         GPIO.setPin(self.directionPin, 'OUT', 'NONE')
 
         if frequency < 15000:
@@ -17,21 +21,24 @@ class Motor:
             self.pwmCtrl = PWM.Signal(pwmPin, frequency)
 
     def setDirection(self, direction):
+        self.stop()
         if direction == 'CW':
             GPIO.write(self.directionPin, 'LOW')
         elif direction == 'CCW':
             GPIO.write(self.directionPin, 'HIGH')
         else:
             raise ValueError("Could not set motor direction, expected either: 'CW' or 'CCW'")
+        time.sleep(DELAY)
+        self.start()
 
     def setSpeed(self, speed):                     #speed in percentage
-        if speed < 50:
-            raise ValueError("Speed is too low, please set it to a value higher than 50%")
-        else:
-            self.speed = speed
+        self.speed = speed
+        self.start()
 
     def start(self):
         self.pwmCtrl.begin(self.speed)
 
     def stop(self):
+        self.speed = 0
         self.pwmCtrl.stop()
+        time.sleep(DELAY)
