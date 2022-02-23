@@ -53,24 +53,32 @@ function [theta1, theta2, theta3, success] = IK(p_sb)
     disp(p_s3);
     
     %apply cosine law to find righty/lefty solutions for joint angles
-    px = p_s3(1);
+    px = (-1)*p_s3(1);
     py = p_s3(2);
     
     gamma = atan2(py,px);   %calculate sum of joint angles in radians
     beta = acos((L1^2 + L2^2 - px^2 - py^2)/(2*L1*L2));
     alpha = acos((px^2 + py^2 + L1^2 - L2^2)/(2*L1*sqrt(px^2 + py^2)));
     
-    theta1a = gamma - alpha;
-    theta1b = gamma + alpha;
+    phi_1a = gamma - alpha;
+    phi_1b = gamma + alpha;
     
-    theta2a = pi - beta;
-    theta2b = beta - pi;
+    phi_2a = pi - beta;
+    phi_2b = beta - pi;
+    
+    theta1 = phi_1a*180/pi;
+    theta2 = phi_2a*180/pi;
+    theta3 = -1*(theta1 + theta2);
+    theta1 = theta1 - 90; %reference taken from y-axis
     
     %determine if righty or lefty solution is within joint angle bounds
-    %code here
-    theta1 = theta1a*180/pi;
-    theta2 = theta2a*180/pi;
-    theta3 = -1*(theta1 + theta2);
+    if checkJointAngleBounds(theta1, theta2, theta3) == 1
+        theta1 = phi_1b*180/pi;
+        theta2 = phi_2b*180/pi;
+        theta3 = -1*(theta1 + theta2);
+        theta1 = theta1 - 90; %reference taken from y-axis
+    end
+    
     
     success = 1;
     

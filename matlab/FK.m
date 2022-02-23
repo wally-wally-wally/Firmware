@@ -16,14 +16,14 @@
 %space frame
 %p_sc - the 1x3 vector that indicates the position of the contact point
 %with respect to the space frame
-%success - bool if function was successful or not - 1 is success, 0 is fail
+%success - bool if function was successful or not : 0 is success, 10 is fail
 
 function [R_sc, p_sc, success] = FK(theta1, theta2, theta3)
     %error case
-    if (theta1 < -90 || theta1 > 90 || theta2 < 0 || theta2 > 180 || theta3 < -90 || theta3 > 90)
+    if checkJointAngleBounds(theta1, theta2, theta3) == 1
         R_sc = [0 0 0; 0 0 0; 0 0 0];
         p_sc = [0; 0; 0];
-        success = 0;
+        success = 1;
         disp("error");
         return;
     end
@@ -50,8 +50,8 @@ function [R_sc, p_sc, success] = FK(theta1, theta2, theta3)
     M = [1 0 0 x_s1; 0 1 0 (y_s1+L1+L2+L3); 0 0 1 z_s1; 0 0 0 1];
     
     %define rotation velocities of joints (all the same because rotating
-    %around z-axis) 3x3 matrix
-    w_1 = [0 -1 0; 1 0 0; 0 0 0];
+    %CCW around z-axis) 3x3 matrix
+    w_1 = [0 1 0; -1 0 0; 0 0 0];
     w_2 = w_1;
     w_3 = w_2;
     
@@ -96,7 +96,7 @@ function [R_sc, p_sc, success] = FK(theta1, theta2, theta3)
     %extract rotation matrix and position matrix
     R_sc = T_sc(1:3,1:3);
     p_sc = T_sc(1:3,4);
-    success = 1;
+    success = 0;
     
     disp(T_sc);
     disp(R_sc);
