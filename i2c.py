@@ -10,11 +10,11 @@ class I2C():
         self.bus.write_block_data(addr, reg, val)
 
     # Writes a byte directly without sending the register value; used by mux
-    def write_byte(self, addr, val)
+    def write_byte(self, addr, val):
         self.bus.write_byte(addr, val)
 
     # Reads a byte directly without sending the register value; used by mux
-    def read_byte(self, addr, val)
+    def read_byte(self, addr, val):
         return self.bus.read_byte(addr, val)
 
     def read(self, addr, reg):
