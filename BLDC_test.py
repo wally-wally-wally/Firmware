@@ -12,7 +12,8 @@ frequency =
 
 wally = Navigation(pwmFR, pwmFL, pwmBR, pwmBL, dirFR, dirFL, dirBR, dirBL, frequency)
 
-wally.setSpeed(0)
+wally.setSpeed(20)
+tracker = 0
 
 while(1):
     print ("Enter input:")
@@ -33,9 +34,11 @@ while(1):
         print ("Enter speed:")
         speed = input()
         wally.setSpeed(int(speed))
-    elif data == 'stop':
-        wally.stop()
-    elif data == 'start':
-        wally.start()
+    elif data == 's':
+        tracker = tracker^1
+        if tracker == 1:
+            wally.start()
+        elif tracker == 0:
+            wally.stop()
     elif data == 'quit':
         break
