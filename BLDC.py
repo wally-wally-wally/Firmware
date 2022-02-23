@@ -21,6 +21,7 @@ class Motor:
             self.pwmCtrl = PWM.Signal(pwmPin, frequency)
 
     def setDirection(self, direction):
+        self.stop()
         if direction == 'CW':
             GPIO.write(self.directionPin, 'LOW')
         elif direction == 'CCW':
