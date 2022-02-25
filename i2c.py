@@ -9,6 +9,10 @@ class I2C():
     def write(self, addr, reg, val):
         self.bus.write_block_data(addr, reg, val)
 
+    # Writes a 16 bit word; used by encoders
+    def write_word(self, addr, val):
+        self.bus.write_word(addr, val)
+
     # Writes a byte directly without sending the register value; used by mux
     def write_byte(self, addr, val):
         self.bus.write_byte(addr, val)
@@ -19,4 +23,8 @@ class I2C():
 
     def read(self, addr, reg):
         return self.bus.read_block_data(addr, reg)
+
+    # Reads 16 bit word; used by encoders
+    def read_word(self, addr, reg):
+        return self.bus.read_word_data(addr, reg)
 
