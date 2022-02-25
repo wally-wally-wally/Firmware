@@ -15,19 +15,24 @@
 % space frame (or at least it should)
 
 %Inputs:
-%p_sb - the 1x3 vector that indicates the position of the bottle with
-%respect to the space frame 1x3 vector
+%R_sc - the 3x3 rotation matrix of the contact point with respect to the
+%space frame
+%p_sc - the 1x3 vector that indicates the position of the contact point
+%with respect to the space frame
 
 %Outputs:
 %theta1 - joint angle of R1 in degrees
 %theta2 - joint angle of R2 in degrees
 %theta3 - joint angle of R3 in degrees
-%success - bool if function was successful or not - 1 is success, 0 is fail
+%success - bool if function was successful or not : 1 is success, 0 is fail
 
-function [theta1, theta2, theta3, success] = IK(p_sb)
+%need to handle case where there's two possible solutions, only one
+%solution or no solution
+function [thetalist_a, thetalist_b, success] = IK(p_sc)
     %error case
     %insert if statement if the ball position is in the arm manipulability
     %circle/ellipsoid also need to code arm manipulability function
+    success = 0;
     
     %define lengths of arm links in m
     L1 = 0.31685;
@@ -42,49 +47,29 @@ function [theta1, theta2, theta3, success] = IK(p_sb)
     
     %define 3x3 identity matrix
     I = [1 0 0; 0 1 0; 0 0 1];
-   
-    %consider link 3 offset to calculate position of joint 3 with respect
-    %to the space frame
-    p_s3 = p_sb;
-    %orientation of end-effector is same as space-frame as well as link 3
-    %being in parallel to x-axis hence the offset is always in the x-axis
-    p_s3(1) = p_sb(1) - L3;
     
-    disp(p_s3);
+    px = p_sc(1);
+    py = p_sc(2);
     
-    %apply cosine law to find righty/lefty solutions for joint angles
-    px = (-1)*p_s3(1);
-    py = p_s3(2);
+    L = sqrt((px - L3)^2 + py^2);
+    delta = atan2(py, (px - L3));
+    rho = acos((L1^2 + L^2 - L2^2)/(2*L1*L));
+    theta1a = 90 - delta*180/pi - rho*180/pi;
+    theta1b = 90 - delta*180/pi + rho*180/pi;
     
-    gamma = atan2(py,px);   %calculate sum of joint angles in radians
-    beta = acos((L1^2 + L2^2 - px^2 - py^2)/(2*L1*L2));
-    alpha = acos((px^2 + py^2 + L1^2 - L2^2)/(2*L1*sqrt(px^2 + py^2)));
+    omega = acos((L1^2 + L2^2 - L^2)/(2*L1*L2));
+    theta2a = 180 - omega*180/pi;
+    theta2b = omega*180/pi - 180;
     
-    phi_1a = gamma - alpha;
-    phi_1b = gamma + alpha;
-    
-    phi_2a = pi - beta;
-    phi_2b = beta - pi;
-    
-    theta1 = phi_1a*180/pi;
-    theta2 = phi_2a*180/pi;
-    theta3 = -1*(theta1 + theta2);
-    theta1 = theta1 - 90; %reference taken from y-axis
-    
-    %determine if righty or lefty solution is within joint angle bounds
-    if checkJointAngleBounds(theta1, theta2, theta3) == 1
-        theta1 = phi_1b*180/pi;
-        theta2 = phi_2b*180/pi;
-        theta3 = -1*(theta1 + theta2);
-        theta1 = theta1 - 90; %reference taken from y-axis
-    end
+    theta3a = 90 - theta1a - theta2a;
+    theta3b = 90 - theta1b - theta2b;
     
     
-    success = 1;
+    thetalist_a = [theta1a theta2a theta3a];
+    thetalist_b = [theta1b theta2b theta3b];
     
-    disp(theta1);
-    disp(theta2);
-    disp(theta3);
+    disp(thetalist_a);
+    disp(thetalist_b);
     disp(success);
     
 end
