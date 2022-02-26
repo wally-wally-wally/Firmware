@@ -11,8 +11,8 @@
 % we can assume the orientation of the bottle will be the same as the space
 % frame
 
-% we can assume the orientation of the end-effector will be the same as the
-% space frame (or at least it should)
+% we can assume the orientation of the end-effector will always be a 90
+% degree rotation of the space frame in -z-axis [0 -1 0; 1 0 0; 0 0 0]
 
 %Inputs:
 %R_sc - the 3x3 rotation matrix of the contact point with respect to the
@@ -42,17 +42,26 @@ function [thetalist_a, thetalist_b, success] = IK(p_sc)
     z_s1 = 0;       %this will probably remain zero because 2-D space
     p_s1 = [x_s1; y_s1; z_s1];
     
-    %manipulability error case
-    
+    %workspace error case
+    %if the contact point is in the workspace but the pose is infeasible,
+    %the joint angle error case should catch it instead
+    if workspaceBoundsCheck(p_sc, p_s1) == 1
+        success = 1;
+        thetalist_a = [0; 0; 0];
+        thetalist_b = [0; 0; 0];
+        disp("contact is outside of arm reach");
+        return;
+    end
     
     %define 3x3 identity matrix
     I = [1 0 0; 0 1 0; 0 0 1];
     
-    px = p_sc(1);
-    py = p_sc(2);
+    %calculate distance between joint 1 and contact point
+    x_1c = p_sc(1) - x_s1;
+    y_1c = p_sc(2) - y_s1;
     
-    L = sqrt((px - L3)^2 + py^2);
-    delta = atan2(py, (px - L3));
+    L = sqrt((x_1c - L3)^2 + y_1c^2);
+    delta = atan2(y_1c, (x_1c - L3));
     rho = acos((L1^2 + L^2 - L2^2)/(2*L1*L));
     theta1a = 90 - rad2deg(delta) - rad2deg(rho);
     theta1b = 90 - rad2deg(delta) + rad2deg(rho);

@@ -21,7 +21,7 @@
 function [R_sc, p_sc, success] = FK(theta1, theta2, theta3, tolerance)
     %error case
     if checkJointAngleBounds(theta1, theta2, theta3, tolerance) == 1
-        R_sc = [0 0 0; 0 0 0; 0 0 0];s
+        R_sc = [0 0 0; 0 0 0; 0 0 0];
         p_sc = [0; 0; 0];
         success = 1;
         disp("error");
