@@ -18,10 +18,10 @@
 %with respect to the space frame
 %success - bool if function was successful or not : 0 is success, 10 is fail
 
-function [R_sc, p_sc, success] = FK(theta1, theta2, theta3)
+function [R_sc, p_sc, success] = FK(theta1, theta2, theta3, tolerance)
     %error case
-    if checkJointAngleBounds(theta1, theta2, theta3) == 1
-        R_sc = [0 0 0; 0 0 0; 0 0 0];
+    if checkJointAngleBounds(theta1, theta2, theta3, tolerance) == 1
+        R_sc = [0 0 0; 0 0 0; 0 0 0];s
         p_sc = [0; 0; 0];
         success = 1;
         disp("error");
@@ -29,9 +29,9 @@ function [R_sc, p_sc, success] = FK(theta1, theta2, theta3)
     end
     
     %define joint angles in radians
-    phi_1 = theta1*pi/180;
-    phi_2 = theta2*pi/180;
-    phi_3 = theta3*pi/180;
+    phi_1 = deg2rad(theta1);
+    phi_2 = deg2rad(theta2);
+    phi_3 = deg2rad(theta3);
     
     %define lengths of arm links in m
     L1 = 0.31685;
@@ -74,15 +74,15 @@ function [R_sc, p_sc, success] = FK(theta1, theta2, theta3)
         
     %calculate rotation matricies based off of input thetas
     %3x3 matrix
-    R_s1 = I + sind(theta1)*w_1 + (1 - cosd(theta1))*w_1*w_1;
-    R_12 = I + sind(theta2)*w_2 + (1 - cosd(theta2))*w_2*w_2;
-    R_23 = I + sind(theta3)*w_3 + (1 - cosd(theta3))*w_3*w_3;
+    R_s1 = I + sin(phi_1)*w_1 + (1 - cos(phi_1))*w_1*w_1;
+    R_12 = I + sin(phi_2)*w_2 + (1 - cos(phi_2))*w_2*w_2;
+    R_23 = I + sin(phi_3)*w_3 + (1 - cos(phi_3))*w_3*w_3;
     
     %calculate position vector for each link transform matrix
     %1x3 vector
-    p_s1 = (I*phi_1 + (1 - cosd(theta1))*w_1 + (phi_1 - sind(theta1))*w_1*w_1)*v_1;
-    p_12 = (I*phi_2 + (1 - cosd(theta2))*w_2 + (phi_2 - sind(theta2))*w_2*w_2)*v_2;
-    p_23 = (I*phi_3 + (1 - cosd(theta3))*w_3 + (phi_3 - sind(theta3))*w_3*w_3)*v_3;
+    p_s1 = (I*phi_1 + (1 - cos(phi_1))*w_1 + (phi_1 - sin(phi_1))*w_1*w_1)*v_1;
+    p_12 = (I*phi_2 + (1 - cos(phi_2))*w_2 + (phi_2 - sin(phi_2))*w_2*w_2)*v_2;
+    p_23 = (I*phi_3 + (1 - cos(phi_3))*w_3 + (phi_3 - sin(phi_3))*w_3*w_3)*v_3;
 
     %form link to link transform matricies
     %4x4 matrix

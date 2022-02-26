@@ -7,7 +7,19 @@ tolerance = 0.001;
 
 %test list
 thetalist = [[0 0 90]];  %pass
+thetalist = [thetalist; [90 0 0]]; %pass
+thetalist = [thetalist; [0 45 45]]; %pass
+thetalist = [thetalist; [0 135 -45]]; %pass
+thetalist = [thetalist; [0 180 -90]]; %pass
+thetalist = [thetalist; [90 -90 90]]; %pass
+thetalist = [thetalist; [90 -45 45]]; %pass
+thetalist = [thetalist; [-45 45 90]]; %pass
+thetalist = [thetalist; [-45 90 45]]; %pass
+thetalist = [thetalist; [-45 135 0]]; %pass
+thetalist = [thetalist; [-90 90 90]]; %pass
 thetalist = [thetalist; [45 45 0]]; %pass
+thetalist = [thetalist; [-90 135 45]]; %pass
+thetalist = [thetalist; [-90 180 0]]; %pass
 thetalist = [thetalist; [5.5933 45 39.4067]]; %pass
 thetalist = [thetalist; [45 -45 90]]; %pass
 

@@ -29,9 +29,6 @@
 %need to handle case where there's two possible solutions, only one
 %solution or no solution
 function [thetalist_a, thetalist_b, success] = IK(p_sc)
-    %error case
-    %insert if statement if the ball position is in the arm manipulability
-    %circle/ellipsoid also need to code arm manipulability function
     success = 0;
     
     %define lengths of arm links in m
@@ -45,6 +42,9 @@ function [thetalist_a, thetalist_b, success] = IK(p_sc)
     z_s1 = 0;       %this will probably remain zero because 2-D space
     p_s1 = [x_s1; y_s1; z_s1];
     
+    %manipulability error case
+    
+    
     %define 3x3 identity matrix
     I = [1 0 0; 0 1 0; 0 0 1];
     
@@ -54,12 +54,12 @@ function [thetalist_a, thetalist_b, success] = IK(p_sc)
     L = sqrt((px - L3)^2 + py^2);
     delta = atan2(py, (px - L3));
     rho = acos((L1^2 + L^2 - L2^2)/(2*L1*L));
-    theta1a = 90 - delta*180/pi - rho*180/pi;
-    theta1b = 90 - delta*180/pi + rho*180/pi;
+    theta1a = 90 - rad2deg(delta) - rad2deg(rho);
+    theta1b = 90 - rad2deg(delta) + rad2deg(rho);
     
     omega = acos((L1^2 + L2^2 - L^2)/(2*L1*L2));
-    theta2a = 180 - omega*180/pi;
-    theta2b = omega*180/pi - 180;
+    theta2a = 180 - rad2deg(omega);
+    theta2b = rad2deg(omega) - 180;
     
     theta3a = 90 - theta1a - theta2a;
     theta3b = 90 - theta1b - theta2b;
