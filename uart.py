@@ -13,6 +13,9 @@ class UART():
     def write(self, data):
         self.serial.write(data)
 
+    def flush(self):
+        return self.serial.flush()
+
     def __del__(self):
         self.serial.close()
 
