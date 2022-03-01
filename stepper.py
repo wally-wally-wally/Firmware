@@ -43,7 +43,7 @@ class Stepper:
         elif degrees > 360:
             raise ValueError("Degrees is too high, please set it to a value between 0 and 360")
         else:
-            delay = (RISINGEDGES*(1/self.frequency))*(degrees/self.ROTATION)
+            delay = (self.RISINGEDGES*(1/self.frequency))*(degrees/self.ROTATION)
             startStepper()
             time.sleep(delay)
             stopStepper()
