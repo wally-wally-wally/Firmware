@@ -19,9 +19,9 @@ class Stepper:
         GPIO.setPin(self.directionPin, 'OUT', 'NONE')
         GPIO.setPin(self.enablePin, 'OUT', 'NONE')
 
-        self.setSpeed(speed)
+        self.setFrequency(speed)
 
-    def setSpeed(self, speed):
+    def setFrequency(self, speed):
         frequency = (speed*self.ROTATION*self.MICROSTEPS)/(self.SECONDS*self.STEPANGLE)
 
         if frequency > 250000:
@@ -37,7 +37,7 @@ class Stepper:
         else:
             raise ValueError("Could not set stepper motor direction, expected either: 'CW' or 'CCW'")
 
-    def setStep(self, degrees):        #degrees of rotation - home state is 45
+    def rotate(self, degrees):        #degrees of rotation - home state is 45
         if degrees < 0:
             raise ValueError("Degrees is too low, please set it to a value between 0 and 360")
         elif degrees > 360:
