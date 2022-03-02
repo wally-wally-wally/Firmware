@@ -7,8 +7,8 @@ class Stepper:
     ROTATION = 360      #degrees
     SECONDS = 60        #seconds per minute
     STEPANGLE = 1.8     #from stepper motor datasheet
-    DUTYCYLCE = 50      #in percent
-    RISINGEDGES = 16    #number of rising edges per full 360 rotation
+    DUTYCYCLE = 50      #in percent
+    TOTALMICROSTEPS = 800    #number of rising edges per full 360 rotation
 
     def __init__(self, stepPin, directionPin, speed): #speed in rotations per minute
         GPIO.init()
@@ -26,6 +26,7 @@ class Stepper:
             raise ValueError("Stepper speed is too high, frequency must be less than 250 000")
         else:
             self.pwmCtrl = PWM.Signal(self.stepPin, frequency)
+            self.frequency = frequency
 
     def setDirection(self, direction):
         if direction == 'CW':
@@ -36,15 +37,15 @@ class Stepper:
             raise ValueError("Could not set stepper motor direction, expected either: 'CW' or 'CCW'")
 
     def rotate(self, degrees):        #degrees of rotation - home state is 45
-        if degrees < 0:
+        if int(degrees) < 0:
             raise ValueError("Degrees is too low, please set it to a value between 0 and 360")
-        elif degrees > 360:
+        elif int(degrees) > 360:
             raise ValueError("Degrees is too high, please set it to a value between 0 and 360")
         else:
-            delay = (self.RISINGEDGES*(1/self.frequency))*(degrees/self.ROTATION)
-            startStepper()
+            delay = self.STEPANGLE*(self.TOTALMICROSTEPS*(1/self.frequency))*(int(degrees)/self.ROTATION)
+            self.startStepper()
             time.sleep(delay)
-            stopStepper()
+            self.stopStepper()
 
     def startStepper(self):
         self.pwmCtrl.begin(self.DUTYCYCLE)
