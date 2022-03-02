@@ -1,12 +1,10 @@
 import stepper
 
-stepPin = 
-directionPin = 
-enablePin = 
-speed = 
+stepPin = 18
+directionPin = 23
+speed = 120
 
-motor = stepper.Stepper(stepPin, directionPin, enablePin, speed)
-motor.enable()
+motor = stepper.Stepper(stepPin, directionPin, speed)
 
 while (1):
     print("Enter input:")
@@ -25,11 +23,5 @@ while (1):
     elif data == 'stop':
         print("Stopping motor")
         motor.stopStepper()
-    elif data == 'enable':
-        print("Enabling steppers")
-        motor.enable()
-    elif data == 'disable':
-        print("Disabling steppers")
-        motor.disable()
     elif data == 'quit':
         break

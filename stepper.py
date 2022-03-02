@@ -10,14 +10,12 @@ class Stepper:
     DUTYCYLCE = 50      #in percent
     RISINGEDGES = 16    #number of rising edges per full 360 rotation
 
-    def __init__(self, stepPin, directionPin, enablePin, speed): #speed in rotations per minute
+    def __init__(self, stepPin, directionPin, speed): #speed in rotations per minute
         GPIO.init()
         self.stepPin = stepPin
         self.directionPin = directionPin
-        self.enablePin = enablePin
 
         GPIO.setPin(self.directionPin, 'OUT', 'NONE')
-        GPIO.setPin(self.enablePin, 'OUT', 'NONE')
 
         self.setFrequency(speed)
 
@@ -53,9 +51,3 @@ class Stepper:
     
     def stopStepper(self):
         self.pwmCtrl.stop()
-
-    def enable(self):
-        GPIO.write(self.enablePin, 'HIGH')
-
-    def disable(self):
-        GPIO.write(self.enablePin, 'LOW')
