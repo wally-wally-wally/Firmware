@@ -1,12 +1,15 @@
-import time
+#commented out sections haven't been tested - need aruco marker
+
 import BLE
 import BLDC
+#import aruco
+from datetime import datetime
 
 class FileManagement:
     def __init__(self, fileName):
         self.fileName = fileName
         self.createFile()
-    
+
     def createFile(self):
         self.file = open(str(self.fileName) + ".txt", "a")
 
@@ -14,7 +17,7 @@ class FileManagement:
         self.file.write(str(direction) + " " + str(time) + "\n")
 
     def readLine(self, desiredLine):
-        self.openFile()
+        self.openRead()
         self.file.seek(0)
         lines = self.file.readlines()
 
@@ -25,18 +28,19 @@ class FileManagement:
     def closeFile(self):
         self.file.close()
 
-    def openFile(self):
+    def openRead(self):
         self.file = open(str(self.fileName) + ".txt", "r")
+
+    def openAppend(self):
+        self.file = open(str(self.fileName) + ".txt", "a")
 
 class Path:
     def __init__(self, pathName, bleObject):
         self.pathFile = FileManagement(pathName)
         self.BLE = bleObject
+        self.aruco_id = 0
+        self.numLines = 0
 
-    def readBLE(self):
-        data = self.BLE.read()
-        print(str(data))
-    
     #def executePath(self):
     #    lines = self.pathFile.readFile()
     #    for segment in enumerate(lines):
@@ -45,28 +49,42 @@ class Path:
     #def executeSegment(self, command):
         #read direction and distance at line and execute
 
-    #def recordPath(self):
-     #   self.pathFile.writeLine("start", "0")
-    #    while not atHomeBase():
-    
+    def recordPath(self):			#to exit while loop it would be an "end command" sent by app - TBD
+        self.pathFile.writeLine("start", "0")   #to set checkpoint it would be "set command" sent by app - TBD
+        data = self.BLE.read()
+
+        while data != b'q\r\n':
+            self.recordSegment()
+            data = self.BLE.read()
+#            if data == b'c\r\n':
+#                self.setCheckpoint()
+
+#        self.atHomeBase()
+
     def recordSegment(self):
-        direction = getDirection()
-        travelTime = getTime()
+        direction = self.getDirection()
+        travelTime = self.getTime()
         self.pathFile.writeLine(direction, travelTime)
+        self.numLines += 1
 
-    #def atHomeBase(self, aruco_id):
-    #    check for aruco marker, if not there:
-      #      reversePath()
-     #   if there is aruco
-      #      self.pathFile.writeFile("end", 0)
+#    def atHomeBase(self):
+#        rvec, tvec = aruco.estimatePose()
+#        if not rvec and not tvec:
+#            self.reversePath()
+#            self.pathFile.writeFile("end", "0")         #no aruco_id because path was reversed
+#        else:
+#            self.pathFile.writeFile("end", self.aruco_id)
 
-    #def setCheckpoint(self, aruco_id):
-        #check for aruco marker, if not there throw error, else:
-        #get aruco id
-     #   self.pathFile.write("checkpoint", aruco_id)
+#    def setCheckpoint(self):
+#        rvec, tvec = aruco.estimatePose()
+#        if not rvec and not tvec:
+#            print("Error: no aruco marker found. Can't set checkpoint here")
+#        else:
+#            self.pathFile.writeLine("checkpoint", self.aruco_id)
+#            self.aruco_id += 1
 
-    def getTime(self):
-        startTime = time.localtime()
+    def getTime(self):        #times seem a bit off - check
+        startTime = datetime.now()
 
         startDirection = self.BLE.read()
         endDirection = startDirection
@@ -74,29 +92,47 @@ class Path:
         while (startDirection == endDirection):
             endDirection = self.BLE.read()
 
-        endTime = time.localtime()
-        return (endTime - startTime)
-    
-    def getDirection(self):      #numbers should be changed based on BLE inputs
+        endTime = datetime.now()
+        return endTime - startTime
+
+    def getDirection(self):      #direction value should be changed based on BLE inputs - TBD
         direction = self.BLE.read()
-        if direction == 0:
-            return 'forward'
-        elif direction == 1:
-            return 'backward'
-        elif direction == 2:
-            return 'right'
-        elif direction == 3:
-            return 'left'
-        elif direction == 4:
-            return 'CW'
-        elif direction == 5:
-            return 'CCW'
+        if direction == b'0\r\n':
+            return "forward"
+        elif direction == b'1\r\n':
+            return "backward"
+        elif direction == b'2\r\n':
+            return "right"
+        elif direction == b'3\r\n':
+            return "left"
+        elif direction == b'4\r\n':
+            return "CW"
+        elif direction == b'5\r\n':
+            return "CCW"
 
-    #def reversePath(self):          #this is reading the file in order, probably want to read backwards?
-    #    lines = self.pathFile.readFile()
-    #    for segment in enumerate(lines):
-    #        reverseSegment(segment.strip())
+    def reversePath(self):
+        while self.numLines != 0:
+            direction, time = self.reverseSegment()
+            self.pathFile.openAppend()
+            self.pathFile.writeLine(direction, time)
 
-    #def reverseSegment(self:)
-        #read file line by line from the bottom up
-        #write at the bottom the reverse
+    def reverseSegment(self):
+        line = self.pathFile.readLine(self.numLines)
+        segment = line.split()
+        direction = self.reverseDirection(segment[0])
+        self.numLines -= 1
+        return direction, segment[1]
+
+    def reverseDirection(self, direction):
+        if direction == "forward":
+            return "backward"
+        elif direction == "backward":
+            return "forward"
+        elif direction == "right":
+            return "left"
+        elif direction == "left":
+            return "right"
+        elif direction == "CW":
+             return "CCW"
+        elif direction == "CCW":
+             return "CW"

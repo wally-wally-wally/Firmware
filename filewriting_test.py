@@ -1,13 +1,12 @@
 import path
 import time
+import BLE
 
-object = path.FileManagement("MyFile")
+wireless = BLE.Socket()
+wireless.advertise()
+wireless.connect()
 
-object.writeLine("Forward", "2")
-object.writeLine("Right", "5")
+pathFile = path.Path("MyFile", wireless)
 
-time.sleep(1)
-
-print(str(object.readLine(1)))
-
-object.closeFile()
+pathFile.recordPath()
+pathFile.reversePath()
