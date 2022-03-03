@@ -45,16 +45,16 @@ class Path:
         self.numLines = 0
 
     def executePath(self):
-        with open('self.pathName') as f:
-        for index, line in enumerate(f):
-            executeSegment(line.strip())
+        with open(str(self.pathName) + ".txt") as f:
+            for index, line in enumerate(f):
+                self.executeSegment(line.strip())
 
-    def executeSegment(self, line):
-        segment = line.split()
-        excuteDirection(segment[0])
-        time.delay(segment[1])
+    def executeSegment(self, line):			#if adding checkpoint with arm movement, can pass segment[1] in executeDirection
+        segment = line.split()				#segment[1] would only be used in direction == checkpoint
+        self.executeDirection(segment[0])
+        time.sleep(int(float(segment[1])))
         self.navigate.stop()
-    
+
     def executeDirection(self, direction):
         if direction == "forward":
             self.navigate.forward()
@@ -68,8 +68,10 @@ class Path:
             self.navigate.cw()
         elif direction == "CCW":
             self.navigate.ccw()
+#        elif direction == "checkpoint":
+#            do arm movement at designated aruco_id
 
-    def recordPath(self):			                    #to exit while loop it would be an "end command" sent by app - TBD
+    def recordPath(self):			        #to exit while loop it would be an "end command" sent by app - TBD
         self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoin command" sent by app - TBD
         data = self.BLE.read()
 
@@ -114,7 +116,8 @@ class Path:
             endDirection = self.BLE.read()
 
         endTime = datetime.now()
-        return endTime - startTime
+        timeString = endTime - startTime
+        return timeString.total_seconds()
 
     def getDirection(self):                             #direction value should be changed based on BLE inputs - TBD
         direction = self.BLE.read()
