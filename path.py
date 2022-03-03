@@ -2,25 +2,30 @@ import time
 import BLE
 
 class FileManagement:
-    def __init__(self, fileName, bleObject):
+    def __init__(self, fileName):
         self.fileName = fileName
-        self.BLE = bleObject
         self.createFile()
     
     def createFile(self):
         self.file = open(str(self.fileName) + ".txt", "a")
 
-    def writeFile(self, direction, time):
-        self.file.write(str(direction) + str(distance) + "\n")
+    def writeLine(self, direction, time):
+        self.file.write(str(direction) + " " + str(time) + "\n")
 
-    def readFile(self):
-        return self.file.readlines()
+    def readLine(self, desiredLine):
+        self.openFile()
+        self.file.seek(0)
+        lines = self.file.readlines()
+
+        for index, line in enumerate(lines):
+             if index == desiredLine:
+                 return line.strip()
 
     def closeFile(self):
         self.file.close()
 
     def openFile(self):
-        self.file = open(str(self.pathName) + ".txt", "r")
+        self.file = open(str(self.fileName) + ".txt", "r")
 
 #class Path:
 #    def __init__(self, pathName):
