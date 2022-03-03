@@ -3,6 +3,7 @@
 import BLE
 import BLDC
 #import aruco
+import time
 from datetime import datetime
 
 class FileManagement:
@@ -35,22 +36,41 @@ class FileManagement:
         self.file = open(str(self.fileName) + ".txt", "a")
 
 class Path:
-    def __init__(self, pathName, bleObject):
+    def __init__(self, pathName, bleObject, navigationObject):
         self.pathFile = FileManagement(pathName)
+        self.pathName = pathName
         self.BLE = bleObject
+        self.navigate = navigationObject
         self.aruco_id = 0
         self.numLines = 0
 
-    #def executePath(self):
-    #    lines = self.pathFile.readFile()
-    #    for segment in enumerate(lines):
-    #        executeSegment(segment.strip())
+    def executePath(self):
+        with open('self.pathName') as f:
+        for index, line in enumerate(f):
+            executeSegment(line.strip())
 
-    #def executeSegment(self, command):
-        #read direction and distance at line and execute
+    def executeSegment(self, line):
+        segment = line.split()
+        excuteDirection(segment[0])
+        time.delay(segment[1])
+        self.navigate.stop()
+    
+    def executeDirection(self, direction):
+        if direction == "forward":
+            self.navigate.forward()
+        elif direction == "backward":
+            self.navigate.backward()
+        elif direction == "right":
+            self.navigate.right()
+        elif direction == "left":
+            self.navigate.left()
+        elif direction == "CW":
+            self.navigate.cw()
+        elif direction == "CCW":
+            self.navigate.ccw()
 
-    def recordPath(self):			#to exit while loop it would be an "end command" sent by app - TBD
-        self.pathFile.writeLine("start", "0")   #to set checkpoint it would be "set command" sent by app - TBD
+    def recordPath(self):			                    #to exit while loop it would be an "end command" sent by app - TBD
+        self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoin command" sent by app - TBD
         data = self.BLE.read()
 
         while data != b'q\r\n':
@@ -70,8 +90,9 @@ class Path:
 #    def atHomeBase(self):
 #        rvec, tvec = aruco.estimatePose()
 #        if not rvec and not tvec:
+#            print("No aruco marker found. Reversing path back to home base.")
 #            self.reversePath()
-#            self.pathFile.writeFile("end", "0")         #no aruco_id because path was reversed
+#            self.pathFile.writeFile("end", "0")        #no aruco_id because path was reversed
 #        else:
 #            self.pathFile.writeFile("end", self.aruco_id)
 
@@ -83,7 +104,7 @@ class Path:
 #            self.pathFile.writeLine("checkpoint", self.aruco_id)
 #            self.aruco_id += 1
 
-    def getTime(self):        #times seem a bit off - check
+    def getTime(self):                                  #times seem a bit off - check
         startTime = datetime.now()
 
         startDirection = self.BLE.read()
@@ -95,7 +116,7 @@ class Path:
         endTime = datetime.now()
         return endTime - startTime
 
-    def getDirection(self):      #direction value should be changed based on BLE inputs - TBD
+    def getDirection(self):                             #direction value should be changed based on BLE inputs - TBD
         direction = self.BLE.read()
         if direction == b'0\r\n':
             return "forward"
@@ -133,6 +154,6 @@ class Path:
         elif direction == "left":
             return "right"
         elif direction == "CW":
-             return "CCW"
+            return "CCW"
         elif direction == "CCW":
-             return "CW"
+            return "CW"
