@@ -74,4 +74,7 @@ class Lidar():
     # dist: the corrected distance, ang: the corrected angle from angCorrection1
     def angCorrection2(self, dist, ang):
         if (dist == 0):
-
+            angCorrection = 0
+        else:
+            angCorrection = math.degrees(math.atan(21.8 * ((155.3 - dist) / (155.3 * dist)) ))
+        return ang + angCorrection
