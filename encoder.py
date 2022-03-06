@@ -11,7 +11,7 @@ class Encoder():
     def __init__(self, i2c):
         self.i2c = i2c
 
-    def getAng():
+    def getAng(self):
         data = self.i2c.read_word(ENCODER_ADDR, ANG_REG)
         data = ((data & 0xFF) << 8) | (data >> 8)
         # Convert to deg
