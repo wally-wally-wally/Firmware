@@ -36,8 +36,7 @@ class FileManagement:
         self.file = open(str(self.fileName) + ".txt", "a")
 
 class PathManagement:
-    def __init__(self, pathName, bleObject, navigationObject):
-        self.pathFile = FileManagement(pathName)
+    def __init__(self, bleObject, navigationObject):
         self.BLE = bleObject
         self.navigate = navigationObject
         self.aruco_id = 0
@@ -70,7 +69,8 @@ class PathManagement:
 #        elif direction == "checkpoint":
 #            do arm movement at designated aruco_id
 
-    def recordPath(self):			        #to exit while loop it would be an "end command" sent by app - TBD
+    def recordPath(self, pathName):			        #to exit while loop it would be an "end command" sent by app - TBD
+        self.pathFile = FileManagement(pathName)
         self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoin command" sent by app - TBD
         data = self.BLE.read()
 
