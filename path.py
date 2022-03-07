@@ -35,7 +35,7 @@ class FileManagement:
     def openAppend(self):
         self.file = open(str(self.fileName) + ".txt", "a")
 
-class Path:
+class PathManagment:
     def __init__(self, pathName, bleObject, navigationObject):
         self.pathFile = FileManagement(pathName)
         self.BLE = bleObject
