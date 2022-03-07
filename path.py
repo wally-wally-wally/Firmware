@@ -38,14 +38,13 @@ class FileManagement:
 class Path:
     def __init__(self, pathName, bleObject, navigationObject):
         self.pathFile = FileManagement(pathName)
-        self.pathName = pathName
         self.BLE = bleObject
         self.navigate = navigationObject
         self.aruco_id = 0
         self.numLines = 0
 
-    def executePath(self):
-        with open(str(self.pathName) + ".txt") as f:
+    def executePath(self, pathName):
+        with open(str(pathName) + ".txt") as f:
             for index, line in enumerate(f):
                 self.executeSegment(line.strip())
 
