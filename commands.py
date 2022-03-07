@@ -1,4 +1,6 @@
-class Commands(intEnum):
+from enum import IntEnum
+
+class Commands(IntEnum):
     #Drive controls
     FORWARD = 0
     BACKWARD = 1
