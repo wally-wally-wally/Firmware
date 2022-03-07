@@ -4,6 +4,7 @@ import BLE
 import BLDC
 #import aruco
 import time
+from commands import Commands
 from datetime import datetime
 
 class FileManagement:
@@ -74,7 +75,7 @@ class PathManagement:
         self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoin command" sent by app - TBD
         data = self.BLE.read()
 
-        while data != b'q\r\n':
+        while data != b'Commands.END_TASK':
             self.recordSegment()
             data = self.BLE.read()
 #            if data == b'c\r\n':
@@ -118,20 +119,20 @@ class PathManagement:
         timeString = endTime - startTime
         return timeString.total_seconds()
 
-    def getDirection(self):                             #direction value should be changed based on BLE inputs - TBD
+    def getDirection(self):
         direction = self.BLE.read()
-        if direction == b'0\r\n':
+        if direction == b'Commands.FORWARD':
             return "forward"
-        elif direction == b'1\r\n':
+        elif direction == b'Commands.BACKWARD':
             return "backward"
-        elif direction == b'2\r\n':
-            return "right"
-        elif direction == b'3\r\n':
+        elif direction == b'Commands.LEFT':
             return "left"
-        elif direction == b'4\r\n':
-            return "CW"
-        elif direction == b'5\r\n':
+        elif direction == b'Commands.RIGHT':
+            return "right"
+        elif direction == b'Commands.CCW':
             return "CCW"
+        elif direction == b'Commands.CW':
+            return "CW"
 
     def reversePath(self):
         while self.numLines != 0:
