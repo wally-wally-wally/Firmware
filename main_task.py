@@ -1,6 +1,7 @@
 import path
 import BLE
 import BLDC
+from commands import Commands
 
 PWM_PIN_FR =
 PWM_PIN_FL =
@@ -25,9 +26,9 @@ def mainTask():
     
     while True:                         #BLE data received determined by app - TBD
         data = wireless.read()
-        if data == 'record':
+        if data == b'Commands.START_RECORDING':
             pathName = wireless.read()  #pathName might need to be converted depending on how we're receiving BLE data
             path.recordPath(str(pathName))
-        elif data == 'execute':
+        elif data == b'Commands.RUN_TASK':
             pathName = wireless.read()
             path.executePath(str(pathName))
