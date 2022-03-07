@@ -1,5 +1,6 @@
 import threading
 from system_monitor import sysMon
+from main_task import mainTask
 
 # Shared resources 
 # Since we're accessing different pins I don't think locks are needed on GPIO functions 
@@ -15,10 +16,10 @@ def init():
 if __name__ == '__main__':
   #  init()
     sysMon = threading.Thread(target=sysMon)
-    #main = threading.Thread(target=test2, args=(2,))
+    mainTask = threading.Thread(target=mainTask)
        
     sysMon.start()
-    #main.start()
+    mainTask.start()
 
     sysMon.join()
-    #main.join()
+    mainTask.join()
