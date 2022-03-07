@@ -113,22 +113,30 @@ class PathManagement:
 
         assert isStop == f'{Commonds.STOP.value}'.encode()
 
+        self.navigate.stop()
+        
         endTime = datetime.now()
         timeString = endTime - startTime
         return timeString.total_seconds()
 
     def getDirection(self, direction):
         if direction == f'{Commands.FORWARD.value}'.encode():
+            self.navigate.forward()
             return "forward"
         elif direction == f'{Commands.BACKWARD.value}'.encode():
+            self.navigate.backward()
             return "backward"
         elif direction == f'{Commands.LEFT.value}'.encode():
+            self.navigate.left()
             return "left"
         elif direction == f'{Commands.RIGHT.value}'.encode():
+            self.navigate.right()
             return "right"
         elif direction == f'{Commands.CCW.value}'.encode()':
+            self.navigate.ccw()
             return "CCW"
         elif direction == f'{Commands.CW.value}'.encode():
+            self.navigate.cw()
             return "CW"
 
     def reversePath(self):
