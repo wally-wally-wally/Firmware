@@ -13,7 +13,7 @@ class FileManagement:
         self.createFile()
 
     def createFile(self):
-        self.file = open(str(self.fileName) + ".txt", "a")
+        self.file = open(str(self.fileName) + ".txt", "w")
 
     def writeLine(self, direction, time):
         self.file.write(str(direction) + " " + str(time) + "\n")
@@ -70,31 +70,31 @@ class PathManagement:
 #        elif direction == "checkpoint":
 #            do arm movement at designated aruco_id
 
-    def recordPath(self, pathName):			        #to exit while loop it would be an "end command" sent by app - TBD
+    def recordPath(self, pathName):
         self.pathFile = FileManagement(pathName)
-        self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoin command" sent by app - TBD
+        self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoint command" sent by app - TBD
         data = self.BLE.read()
 
-        while data != b'Commands.END_TASK':
-            self.recordSegment()
+        while data != f'{Commands.END_TASK.value}'.encode():
+            self.recordSegment(data)
             data = self.BLE.read()
 #            if data == b'c\r\n':
 #                self.setCheckpoint()
 
-#        self.atHomeBase()
+        self.atHomeBase()
 
-    def recordSegment(self):
-        direction = self.getDirection()
+    def recordSegment(self, data):
+        direction = self.getDirection(data)
         travelTime = self.getTime()
         self.pathFile.writeLine(direction, travelTime)
         self.numLines += 1
 
-#    def atHomeBase(self):
+    def atHomeBase(self):
 #        rvec, tvec = aruco.estimatePose()
 #        if not rvec and not tvec:
 #            print("No aruco marker found. Reversing path back to home base.")
-#            self.reversePath()
-#            self.pathFile.writeFile("end", "0")        #no aruco_id because path was reversed
+        self.reversePath()
+        self.pathFile.writeFile("end", "0")        #no aruco_id because path was reversed
 #        else:
 #            self.pathFile.writeFile("end", self.aruco_id)
 
@@ -109,29 +109,26 @@ class PathManagement:
     def getTime(self):                                  #times seem a bit off - check
         startTime = datetime.now()
 
-        startDirection = self.BLE.read()
-        endDirection = startDirection
+        isStop = self.BLE.read()
 
-        while (startDirection == endDirection):
-            endDirection = self.BLE.read()
+        assert isStop == f'{Commonds.STOP.value}'.encode()
 
         endTime = datetime.now()
         timeString = endTime - startTime
         return timeString.total_seconds()
 
-    def getDirection(self):
-        direction = self.BLE.read()
-        if direction == b'Commands.FORWARD':
+    def getDirection(self, direction):
+        if direction == f'{Commands.FORWARD.value}'.encode():
             return "forward"
-        elif direction == b'Commands.BACKWARD':
+        elif direction == f'{Commands.BACKWARD.value}'.encode():
             return "backward"
-        elif direction == b'Commands.LEFT':
+        elif direction == f'{Commands.LEFT.value}'.encode():
             return "left"
-        elif direction == b'Commands.RIGHT':
+        elif direction == f'{Commands.RIGHT.value}'.encode():
             return "right"
-        elif direction == b'Commands.CCW':
+        elif direction == f'{Commands.CCW.value}'.encode()':
             return "CCW"
-        elif direction == b'Commands.CW':
+        elif direction == f'{Commands.CW.value}'.encode():
             return "CW"
 
     def reversePath(self):
