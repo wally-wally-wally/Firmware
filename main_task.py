@@ -18,6 +18,8 @@ def init():
     wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY)
     route = path.PathManagement(wireless, wally)
 
+    wally.setSpeed(50)
+
     wireless.advertise()
     wireless.connect()
 
