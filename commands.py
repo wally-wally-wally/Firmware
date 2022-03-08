@@ -24,3 +24,4 @@ class Commands(IntEnum):
     START_RECORDING = 15
     END_RECORDING = 16
     RUN_TASK = 17
+    LIST_TASKS = 18

@@ -4,6 +4,7 @@ import BLE
 import BLDC
 #import aruco
 import time
+import os
 from commands import Commands
 from datetime import datetime
 
@@ -165,3 +166,7 @@ class PathManagement:
             return "CCW"
         elif direction == "CCW":
             return "CW"
+
+    def listTasks(self):
+        tasks = os.listdir("/home/pi/firmware/tasks")
+        self.BLE.write(str(tasks))

@@ -37,3 +37,5 @@ def mainTask():
         elif data == f'{Commands.RUN_TASK.value}'.encode():
             pathName = wireless.read()
             route.executePath(pathName.decode())
+        elif data == f'{Commands.LIST_TASKS.value}'.encode():
+            route.listTasks()
