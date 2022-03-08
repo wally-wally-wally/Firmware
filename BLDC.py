@@ -3,8 +3,6 @@ import PWM
 import time
 
 class Motor:
-    DELAY = 0.2
-
     def __init__(self, pwmPin, directionPin, frequency):
         GPIO.init()
         self.pwmPin = pwmPin
@@ -27,7 +25,6 @@ class Motor:
             GPIO.write(self.directionPin, 'HIGH')
         else:
             raise ValueError("Could not set motor direction, expected either: 'CW' or 'CCW'")
-        time.sleep(self.DELAY)
 
     def setMotorSpeed(self, speed): #speed in percentage
         self.speed = speed
