@@ -5,7 +5,7 @@ DATA_HEADER_LOWER = 'aa'
 DATA_HEADER_UPPER = '5500'
 
 BAUD = 115200
-PORT = uart.UART_0
+UART = uart.UART_0
 
 class Lidar():
     def __init__(self, uart):
