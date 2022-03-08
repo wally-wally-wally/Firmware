@@ -99,7 +99,6 @@ class Navigation:
         self.FL.setMotorSpeed(int(speed))
         self.BR.setMotorSpeed(int(speed))
         self.BL.setMotorSpeed(int(speed))
-        self.start()
     
     def stop(self):
         self.FR.stopMotor()
