@@ -3,14 +3,14 @@ import BLE
 import BLDC
 from commands import Commands
 
-PWM_PIN_FR = 
-PWM_PIN_FL = 
-PWM_PIN_BR = 
-PWM_PIN_BL = 
-DIR_PIN_FR = 
-DIR_PIN_FL = 
-DIR_PIN_BR = 
-DIR_PIN_BL = 
+PWM_PIN_FR = 10
+PWM_PIN_FL = 17
+PWM_PIN_BR = 17
+PWM_PIN_BL = 10
+DIR_PIN_FR = 22
+DIR_PIN_FL = 4
+DIR_PIN_BR = 27
+DIR_PIN_BL = 9
 PWM_FREQUENCY = 20000
 
 def init():
