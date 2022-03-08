@@ -46,14 +46,19 @@ class PathManagement:
         self.numLines = 0
 
     def executePath(self, pathName):
-        with open(str(pathName)) as f:
+        with open(TASKS_FOLDER + str(pathName)) as f:
             for index, line in enumerate(f):
                 self.executeSegment(line.strip())
 
     def executeSegment(self, line):			#if adding checkpoint with arm movement, can pass segment[1] in executeDirection
         segment = line.split()				#segment[1] would only be used in direction == checkpoint
         self.executeDirection(segment[0])
-        time.sleep(int(float(segment[1])))
+
+        endTime = time.time() + int(float(segment[1]))
+        while time.time() < endTime:
+            #do lidar stuff
+            pass
+
         self.navigate.stop()
 
     def executeDirection(self, direction):
