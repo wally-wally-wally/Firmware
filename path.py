@@ -54,7 +54,7 @@ class PathManagement:
         segment = line.split()				#segment[1] would only be used in direction == checkpoint
         self.executeDirection(segment[0])
 
-        endTime = time.time() + int(float(segment[1]))
+        endTime = time.time() + float(segment[1])
         while time.time() < endTime:
             #do lidar stuff
             pass
