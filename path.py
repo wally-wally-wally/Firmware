@@ -13,7 +13,7 @@ class FileManagement:
         self.createFile()
 
     def createFile(self):
-        self.file = open(str(self.fileName) + ".txt", "w")
+        self.file = open(str(self.fileName), "w")
 
     def writeLine(self, direction, time):
         self.file.write(str(direction) + " " + str(time) + "\n")
@@ -31,10 +31,10 @@ class FileManagement:
         self.file.close()
 
     def openRead(self):
-        self.file = open(str(self.fileName) + ".txt", "r")
+        self.file = open(str(self.fileName), "r")
 
     def openAppend(self):
-        self.file = open(str(self.fileName) + ".txt", "a")
+        self.file = open(str(self.fileName), "a")
 
 class PathManagement:
     def __init__(self, bleObject, navigationObject):
@@ -44,7 +44,7 @@ class PathManagement:
         self.numLines = 0
 
     def executePath(self, pathName):
-        with open(str(pathName) + ".txt") as f:
+        with open(str(pathName)) as f:
             for index, line in enumerate(f):
                 self.executeSegment(line.strip())
 
