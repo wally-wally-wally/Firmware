@@ -7,13 +7,15 @@ import time
 from commands import Commands
 from datetime import datetime
 
+TASKS_FOLDER = './tasks/'
+
 class FileManagement:
     def __init__(self, fileName):
         self.fileName = fileName
         self.createFile()
 
     def createFile(self):
-        self.file = open(str(self.fileName), "w")
+        self.file = open(TASKS_FOLDER + str(self.fileName), "w")
 
     def writeLine(self, direction, time):
         self.file.write(str(direction) + " " + str(time) + "\n")
@@ -31,10 +33,10 @@ class FileManagement:
         self.file.close()
 
     def openRead(self):
-        self.file = open(str(self.fileName), "r")
+        self.file = open(TASKS_FOLDER + str(self.fileName), "r")
 
     def openAppend(self):
-        self.file = open(str(self.fileName), "a")
+        self.file = open(TASKS_FOLDER + str(self.fileName), "a")
 
 class PathManagement:
     def __init__(self, bleObject, navigationObject):
@@ -74,7 +76,7 @@ class PathManagement:
         self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoint command" sent by app - TBD
         data = self.BLE.read()
 
-        while data != f'{Commands.END_TASK.value}'.encode():
+        while data != f'{Commands.END_RECORDING.value}'.encode():
             self.recordSegment(data)
             data = self.BLE.read()
 #            if data == b'c\r\n':
@@ -93,9 +95,9 @@ class PathManagement:
 #        if not rvec and not tvec:
 #            print("No aruco marker found. Reversing path back to home base.")
         self.reversePath()
-        self.pathFile.writeFile("end", "0")        #no aruco id because path was reversed
+        self.pathFile.writeLine("end", "0")        #no aruco id because path was reversed
 #        else:
-#            self.pathFile.writeFile("end", getArucoID())
+#            self.pathFile.writeLine("end", getArucoID())
 
 #    def setCheckpoint(self):
 #        rvec, tvec = aruco.estimatePose()
@@ -109,10 +111,10 @@ class PathManagement:
 
         isStop = self.BLE.read()
 
-        assert isStop == f'{Commonds.STOP.value}'.encode()
+        assert isStop == f'{Commands.STOP.value}'.encode()
 
         self.navigate.stop()
-        
+
         endTime = datetime.now()
         timeString = endTime - startTime
         return timeString.total_seconds()
@@ -130,7 +132,7 @@ class PathManagement:
         elif direction == f'{Commands.RIGHT.value}'.encode():
             self.navigate.right()
             return "right"
-        elif direction == f'{Commands.CCW.value}'.encode()':
+        elif direction == f'{Commands.CCW.value}'.encode():
             self.navigate.ccw()
             return "CCW"
         elif direction == f'{Commands.CW.value}'.encode():
