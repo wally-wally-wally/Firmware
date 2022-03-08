@@ -40,7 +40,6 @@ class PathManagement:
     def __init__(self, bleObject, navigationObject):
         self.BLE = bleObject
         self.navigate = navigationObject
-        self.aruco_id = 0
         self.numLines = 0
 
     def executePath(self, pathName):
@@ -68,7 +67,7 @@ class PathManagement:
         elif direction == "CCW":
             self.navigate.ccw()
 #        elif direction == "checkpoint":
-#            do arm movement at designated aruco_id
+#            do arm movement at designated aruco id
 
     def recordPath(self, pathName):
         self.pathFile = FileManagement(pathName)
@@ -94,17 +93,16 @@ class PathManagement:
 #        if not rvec and not tvec:
 #            print("No aruco marker found. Reversing path back to home base.")
         self.reversePath()
-        self.pathFile.writeFile("end", "0")        #no aruco_id because path was reversed
+        self.pathFile.writeFile("end", "0")        #no aruco id because path was reversed
 #        else:
-#            self.pathFile.writeFile("end", self.aruco_id)
+#            self.pathFile.writeFile("end", getArucoID())
 
 #    def setCheckpoint(self):
 #        rvec, tvec = aruco.estimatePose()
 #        if not rvec and not tvec:
 #            print("Error: no aruco marker found. Can't set checkpoint here")
 #        else:
-#            self.pathFile.writeLine("checkpoint", self.aruco_id)
-#            self.aruco_id += 1
+#            self.pathFile.writeLine("checkpoint", getArucoID())
 
     def getTime(self):                                  #times seem a bit off - check
         startTime = datetime.now()
