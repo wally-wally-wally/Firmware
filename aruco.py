@@ -122,3 +122,38 @@ def estimatePose(imgPath, type = TYPE_DEF, kMatrixPath = 'camera_calibration/cal
                 cv2.destroyAllWindows()
 
     return rvec, tvec
+
+# imgName - Image name
+# markerLength - Length of the marker (metres)
+# visualize - display the ArUco marker(s) with the pose
+
+# return: Array of arUco IDs in the image
+def getIds(imgName, imgDir = ARUCO_DIR_DEF, type = TYPE_DEF, visualize = False):
+
+    if ARUCO_DICT.get(type, None) is None:
+        print(f"ArUCo tag type 'type' is not supported")
+        return False
+
+    imgPath = imgDir + imgName + '.jpeg'
+
+    image = cv2.imread(imgPath)
+    h,w,_ = image.shape
+    width = 600
+    height = int(width*(h/w))
+    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_CUBIC)
+
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    cv2.aruco_dict = cv2.aruco.Dictionary_get(ARUCO_DICT[type])
+    parameters = cv2.aruco.DetectorParameters_create()
+
+    corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters)
+
+    if (visualize is True):
+        # Draw a square around the markers
+        cv2.aruco.drawDetectedMarkers(image, corners)
+        cv2.imshow('Estimated Pose', image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    return ids
+
