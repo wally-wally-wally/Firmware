@@ -37,7 +37,6 @@ class Motor:
 
     def stopMotor(self):
         self.pwmCtrl.stop()
-        time.sleep(self.DELAY)
 
 class Navigation:
     def __init__(self, pwmPinFR, pwmPinFL, pwmPinBR, pwmPinBL, dirPinFR, dirPinFL, dirPinBR, dirPinBL, frequency):
@@ -47,7 +46,6 @@ class Navigation:
         self.BL = Motor(pwmPinBL, dirPinBL, frequency)
 
     def forward(self):
-        self.stop()
         self.FR.setDirection('CCW') #forward
         self.FL.setDirection('CW')  #forward
         self.BR.setDirection('CCW') #forward
@@ -55,7 +53,6 @@ class Navigation:
         self.start()
 
     def backward(self):
-        self.stop()
         self.FR.setDirection('CW')  #backward
         self.FL.setDirection('CCW') #backward
         self.BR.setDirection('CW')  #backward
@@ -63,7 +60,6 @@ class Navigation:
         self.start()
 
     def right(self):
-        self.stop()
         self.FR.setDirection('CW')  #backward
         self.FL.setDirection('CW')  #forward
         self.BR.setDirection('CCW') #forward
@@ -71,7 +67,6 @@ class Navigation:
         self.start()
 
     def left(self):
-        self.stop()
         self.FR.setDirection('CCW') #forward
         self.FL.setDirection('CCW') #backward
         self.BR.setDirection('CW')  #backward
@@ -79,7 +74,6 @@ class Navigation:
         self.start()
 
     def ccw(self):
-        self.stop()
         self.FR.setDirection('CCW') #forward
         self.FL.setDirection('CCW') #backward
         self.BR.setDirection('CCW') #forward
@@ -87,25 +81,24 @@ class Navigation:
         self.start()
 
     def cw(self):
-        self.stop()
         self.FR.setDirection('CW') #backward
         self.FL.setDirection('CW') #forward
         self.BR.setDirection('CW') #backward
         self.BL.setDirection('CW') #forward
         self.start()
-    
+
     def setSpeed(self, speed):      #add buffers if necessary
         self.FR.setMotorSpeed(int(speed))
         self.FL.setMotorSpeed(int(speed))
         self.BR.setMotorSpeed(int(speed))
         self.BL.setMotorSpeed(int(speed))
-    
+
     def stop(self):
         self.FR.stopMotor()
         self.FL.stopMotor()
         self.BR.stopMotor()
         self.BL.stopMotor()
-    
+
     def start(self):
         self.FR.startMotor()
         self.FL.startMotor()
