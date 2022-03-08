@@ -169,4 +169,6 @@ class PathManagement:
 
     def listTasks(self):
         tasks = os.listdir("/home/pi/firmware/tasks")
-        self.BLE.write(str(tasks))
+        for i in tasks:
+            self.BLE.write(str(i))
+            self.BLE.write(",")
