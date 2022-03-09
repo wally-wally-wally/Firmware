@@ -1,7 +1,7 @@
 import path
 import BLE
 import BLDC
-import camera
+#import camera
 from commands import Commands
 
 PWM_PIN_FR = 10
@@ -18,8 +18,8 @@ JUMPER = True
 def init():
     wireless = BLE.Socket()
     wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY, JUMPER)
-    cam = camera.Camera()
-    route = path.PathManagement(wireless, wally, cam)
+    #cam = camera.Camera()
+    route = path.PathManagement(wireless, wally)
 
     wally.setSpeed(50)
 
@@ -34,9 +34,11 @@ def mainTask():
     while True:
         data = wireless.read()
 
-        if data.startswith(Commands.START_RECORDING.decode()):
-            route.recordPath(data[3:].decode())
-        elif data.startswith(Commands.RUN_TASK.decode()):
-            route.executePath(data[3:].decode())
-        elif data == f'{Commands.LIST_TASKS.value}'.encode():
+        if data.startswith(Commands.START_RECORDING):
+            print ("recording")
+            route.recordPath(data.split(",")[1])
+        elif data.startswith(Commands.RUN_TASK):
+            print ("execute")
+            route.executePath(data.split(",")[1])
+        elif data == f'{Commands.LIST_TASKS.value}':
             route.listTasks()
