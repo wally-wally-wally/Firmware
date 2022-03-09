@@ -17,8 +17,9 @@ class Lidar():
         while(headerReceived is False):
             while (self.uart.read(1).hex() != DATA_HEADER_LOWER):
                 pass
-            if (self.uart.read(2).hex() == DATA_HEADER_UPPER):
-                headerReceived = True
+            if (self.uart.read(1).hex() == '55'):
+                if(self.uart.read(1).hex() != '01'):
+                    headerReceived = True
 
         self.numVals = int(self.uart.read(1).hex(), 16)
 
@@ -71,8 +72,8 @@ class Lidar():
 
 
         diff = endAng - startAng
-        #if diff < 0:
-        #    diff += 360
+        if diff < 0:
+            diff += 360
 
         for i in range(self.numVals):
             #distL = self.rawData[i * 4] + 256 * self.rawData[i * 4 + 1]
@@ -82,8 +83,6 @@ class Lidar():
             #self.dist[i] = int(distU + distL, 16)
             self.dist[i] = distU * 256 + distL
 
-            
-
             checksum ^= self.dist[i]
 
             self.dist[i] = self.distCorrection(self.dist[i])
@@ -91,8 +90,13 @@ class Lidar():
             self.ang[i] = self.angCorrection2(self.dist[i], ang)
             if self.ang[i] < 0:
                 self.ang[i] = self.ang[i] + 360
-            elif self.ang[i] > 0:
+            elif self.ang[i] >= 360:
                 self.ang[i] = self.ang[i] - 360
+
+            # Error
+            if self.dist[i] == 0 or self.dist[i] == 0.5:
+                self.dist[i] = 0.0
+                self.ang[i] = 0.0
 
         checksum ^= (self.numVals << 8)
         checksum ^= (self.lsa)

@@ -15,18 +15,26 @@ while True:
 
 
     for i in range(len(l.dist)):
-        if l.ang[i] > 0 or l.ang[i] < 360:
-            if l.dist[i] < 200:
-                data[round(l.ang[i])] = True
+        #print(str(l.ang[i]) + ": " + str(l.dist[i]))
+        if l.ang[i] == 0:
+            continue
+        rounded = round(l.ang[i])
+        if rounded >= 360:
+            rounded = rounded - 360
+        if l.ang[i] > 240 or l.ang[i] < 290:
+            if l.dist[i] < 200 and l.dist[i] != 0:
+                #if(data[rounded] is True):
                 if obstruction is False:
                     print('New obstruction', flush = True)
                 obstruction = True
+                data[rounded] = True
+
             else:
-                data[round(l.ang[i])] = False
+                data[rounded] = False
 
     old = obstruction
     obstruction = False
-    for i in range(85, 135):
+    for i in range(240, 290):
         if data[i] is True:
             obstruction = True
             break
