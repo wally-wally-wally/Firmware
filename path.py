@@ -156,20 +156,34 @@ class PathManagement:
         segment = line.split()
         direction = self.reverseDirection(segment[0])
         self.numLines -= 1
+
+        endTime = time.time() + float(segment[1])
+        while time.time() < endTime:
+            pass
+
+        self.navigate.stop()
+        time.sleep(0.5)
+
         return direction, segment[1]
 
     def reverseDirection(self, direction):
         if direction == "forward":
+            self.navigate.backward()
             return "backward"
         elif direction == "backward":
+            self.navigate.forward()
             return "forward"
         elif direction == "right":
+            self.navigate.left()
             return "left"
         elif direction == "left":
+            self.navigate.right()
             return "right"
         elif direction == "CW":
+            self.navigate.ccw()
             return "CCW"
         elif direction == "CCW":
+            self.navigate.cw()
             return "CW"
 
     def listTasks(self):
