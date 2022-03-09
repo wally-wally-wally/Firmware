@@ -5,18 +5,20 @@ import time
 class Motor:
     def __init__(self, pwmPin, directionPin, frequency):
         GPIO.init()
-        self.pwmPin = pwmPin
         self.directionPin = directionPin
-        self.speed = 0
 
         GPIO.setPin(self.directionPin, 'OUT', 'NONE')
 
-        if frequency < 15000:
-            raise ValueError("Frequency is too low, please set it to a value between 15000 and 25000")
-        elif frequency > 25000:
-            raise ValueError("Frequency is too high, please set it to a value between 15000 and 25000")
-        else:
-            self.pwmCtrl = PWM.Signal(pwmPin, frequency)
+        if pwmPin != 'NONE':
+            self.pwmPin = pwmPin
+            self.speed = 0
+
+            if frequency < 15000:
+                raise ValueError("Frequency is too low, please set it to a value between 15000 and 25000")
+            elif frequency > 25000:
+                raise ValueError("Frequency is too high, please set it to a value between 15000 and 25000")
+            else:
+                self.pwmCtrl = PWM.Signal(pwmPin, frequency)
 
     def setDirection(self, direction):
         if direction == 'CW':
@@ -36,11 +38,17 @@ class Motor:
         self.pwmCtrl.begin(0)
 
 class Navigation:
-    def __init__(self, pwmPinFR, pwmPinFL, pwmPinBR, pwmPinBL, dirPinFR, dirPinFL, dirPinBR, dirPinBL, frequency):
+    def __init__(self, pwmPinFR, pwmPinFL, pwmPinBR, pwmPinBL, dirPinFR, dirPinFL, dirPinBR, dirPinBL, frequency, jumper):
         self.FR = Motor(pwmPinFR, dirPinFR, frequency)
         self.FL = Motor(pwmPinFL, dirPinFL, frequency)
-        self.BR = Motor(pwmPinBR, dirPinBR, frequency)
-        self.BL = Motor(pwmPinBL, dirPinBL, frequency)
+
+        if jumper == False:
+            self.BR = Motor(pwmPinBR, dirPinBR, frequency)
+            self.BL = Motor(pwmPinBL, dirPinBL, frequency)
+        elif jumper == True:
+            self.BR = Motor('NONE', dirPinBR, frequency)
+            self.BL = Motor('NONE', dirPinBL, frequency)
+            self.jumper = True
 
     def forward(self):
         self.FR.setDirection('CCW') #forward
@@ -87,17 +95,20 @@ class Navigation:
     def setSpeed(self, speed):      #add buffers if necessary
         self.FR.setMotorSpeed(int(speed))
         self.FL.setMotorSpeed(int(speed))
-        self.BR.setMotorSpeed(int(speed))
-        self.BL.setMotorSpeed(int(speed))
+        if self.jumper == False:
+            self.BR.setMotorSpeed(int(speed))
+            self.BL.setMotorSpeed(int(speed))
 
     def stop(self):
         self.FR.stopMotor()
         self.FL.stopMotor()
-        self.BR.stopMotor()
-        self.BL.stopMotor()
+        if self.jumper == False:
+            self.BR.stopMotor()
+            self.BL.stopMotor()
 
     def start(self):
         self.FR.startMotor()
         self.FL.startMotor()
-        self.BR.startMotor()
-        self.BL.startMotor()
+        if self.jumper ==  False:
+            self.BR.startMotor()
+            self.BL.startMotor()

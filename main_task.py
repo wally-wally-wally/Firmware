@@ -12,10 +12,11 @@ DIR_PIN_FL = 4
 DIR_PIN_BR = 27
 DIR_PIN_BL = 9
 PWM_FREQUENCY = 20000
+JUMPER = True
 
 def init():
     wireless = BLE.Socket()
-    wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY)
+    wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY, JUMPER)
     route = path.PathManagement(wireless, wally)
 
     wally.setSpeed(50)
@@ -31,11 +32,9 @@ def mainTask():
     while True:
         data = wireless.read()
 
-        if data == f'{Commands.START_RECORDING.value}'.encode():
-            pathName = wireless.read()
-            route.recordPath(pathName.decode())
-        elif data == f'{Commands.RUN_TASK.value}'.encode():
-            pathName = wireless.read()
-            route.executePath(pathName.decode())
+        if data.startswith(f'{Commands.START_RECORDING.value}'.encode()):
+            route.recordPath(data[3:].decode())
+        elif data.startswith(f'{Commands.RUN_TASK.value}'.encode()):
+            route.executePath(data[3:].decode())
         elif data == f'{Commands.LIST_TASKS.value}'.encode():
             route.listTasks()
