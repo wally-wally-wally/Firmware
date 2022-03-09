@@ -45,6 +45,7 @@ class Navigation:
         if jumper == False:
             self.BR = Motor(pwmPinBR, dirPinBR, frequency)
             self.BL = Motor(pwmPinBL, dirPinBL, frequency)
+            self.jumper = False
         elif jumper == True:
             self.BR = Motor('NONE', dirPinBR, frequency)
             self.BL = Motor('NONE', dirPinBL, frequency)
