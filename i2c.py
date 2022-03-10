@@ -1,5 +1,7 @@
 import smbus
 
+MAIN_CHANNEL = 1
+
 class I2C():
     # Channel: I2C channel; 0 or 1
     def __init__(self, channel):
