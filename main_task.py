@@ -34,11 +34,9 @@ def mainTask():
     while True:
         data = wireless.read()
 
-        if data.startswith(Commands.START_RECORDING):
-            print ("recording")
+        if data.startswith(f'{Commands.START_RECORDING.value}'):
             route.recordPath(data.split(",")[1])
-        elif data.startswith(Commands.RUN_TASK):
-            print ("execute")
+        elif data.startswith(f'{Commands.RUN_TASK.value}'):
             route.executePath(data.split(",")[1])
         elif data == f'{Commands.LIST_TASKS.value}':
             route.listTasks()

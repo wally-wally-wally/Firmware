@@ -42,7 +42,7 @@ class FileManagement:
 
 class PathManagement:
     def __init__(self, bleObject, navigationObject):
-        self.BLE = bleObject
+        self.ble = bleObject
         self.navigate = navigationObject
         #self.camera = cameraObject
         self.numLines = 0
@@ -82,11 +82,11 @@ class PathManagement:
     def recordPath(self, pathName):
         self.pathFile = FileManagement(pathName)
         self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoint command" sent by app - TBD
-        data = self.BLE.read()
+        data = self.ble.read()
 
         while data != f'{Commands.END_RECORDING.value}':
             self.recordSegment(data)
-            data = self.BLE.read()
+            data = self.ble.read()
 #            if data == b'c\r\n':
 #                self.setCheckpoint()
 
@@ -117,7 +117,7 @@ class PathManagement:
     def getTime(self):                                  #times seem a bit off - check
         startTime = datetime.now()
 
-        isStop = self.BLE.read()
+        isStop = self.ble.read()
 
         assert isStop == f'{Commands.STOP.value}'
 
@@ -191,4 +191,4 @@ class PathManagement:
     def listTasks(self):
         tasks = os.listdir("/home/pi/firmware/tasks")
         arr = ','.join(tasks)
-        self.BLE.write(str(arr))
+        self.ble.write(f"{arr}\n")
