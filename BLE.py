@@ -21,7 +21,7 @@ class Socket:
         print ("Accepted connection from", address)
 
     def read(self):
-        return self.client.recv(1024) #returns data read
+        return self.client.recv(1024).decode() #returns data read
 
     def write(self, data):
         self.client.send(data)

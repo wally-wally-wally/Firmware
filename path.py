@@ -4,8 +4,12 @@ import BLE
 import BLDC
 #import aruco
 import time
+import os
+#import camera
 from commands import Commands
 from datetime import datetime
+
+TASKS_FOLDER = './tasks/'
 
 class FileManagement:
     def __init__(self, fileName):
@@ -13,7 +17,7 @@ class FileManagement:
         self.createFile()
 
     def createFile(self):
-        self.file = open(str(self.fileName), "w")
+        self.file = open(TASKS_FOLDER + str(self.fileName), "w")
 
     def writeLine(self, direction, time):
         self.file.write(str(direction) + " " + str(time) + "\n")
@@ -31,26 +35,32 @@ class FileManagement:
         self.file.close()
 
     def openRead(self):
-        self.file = open(str(self.fileName), "r")
+        self.file = open(TASKS_FOLDER + str(self.fileName), "r")
 
     def openAppend(self):
-        self.file = open(str(self.fileName), "a")
+        self.file = open(TASKS_FOLDER + str(self.fileName), "a")
 
 class PathManagement:
     def __init__(self, bleObject, navigationObject):
-        self.BLE = bleObject
+        self.ble = bleObject
         self.navigate = navigationObject
+        #self.camera = cameraObject
         self.numLines = 0
 
     def executePath(self, pathName):
-        with open(str(pathName)) as f:
+        with open(TASKS_FOLDER + str(pathName)) as f:
             for index, line in enumerate(f):
                 self.executeSegment(line.strip())
 
     def executeSegment(self, line):			#if adding checkpoint with arm movement, can pass segment[1] in executeDirection
         segment = line.split()				#segment[1] would only be used in direction == checkpoint
         self.executeDirection(segment[0])
-        time.sleep(int(float(segment[1])))
+
+        endTime = time.time() + float(segment[1])
+        while time.time() < endTime:
+            #do lidar stuff
+            pass
+
         self.navigate.stop()
 
     def executeDirection(self, direction):
@@ -72,11 +82,11 @@ class PathManagement:
     def recordPath(self, pathName):
         self.pathFile = FileManagement(pathName)
         self.pathFile.writeLine("start", "0")           #to set checkpoint it would be "set checkpoint command" sent by app - TBD
-        data = self.BLE.read()
+        data = self.ble.read()
 
-        while data != f'{Commands.END_TASK.value}'.encode():
+        while data != f'{Commands.END_RECORDING.value}':
             self.recordSegment(data)
-            data = self.BLE.read()
+            data = self.ble.read()
 #            if data == b'c\r\n':
 #                self.setCheckpoint()
 
@@ -89,13 +99,13 @@ class PathManagement:
         self.numLines += 1
 
     def atHomeBase(self):
-#        rvec, tvec = aruco.estimatePose()
-#        if not rvec and not tvec:
+#        self.camera.capture("home")
+#        if not aruco.getIDs("home"):
 #            print("No aruco marker found. Reversing path back to home base.")
         self.reversePath()
-        self.pathFile.writeFile("end", "0")        #no aruco id because path was reversed
+        self.pathFile.writeLine("end", "0")        #no aruco id because path was reversed
 #        else:
-#            self.pathFile.writeFile("end", getArucoID())
+#            self.pathFile.writeLine("end", "0")
 
 #    def setCheckpoint(self):
 #        rvec, tvec = aruco.estimatePose()
@@ -107,33 +117,33 @@ class PathManagement:
     def getTime(self):                                  #times seem a bit off - check
         startTime = datetime.now()
 
-        isStop = self.BLE.read()
+        isStop = self.ble.read()
 
-        assert isStop == f'{Commonds.STOP.value}'.encode()
+        assert isStop == f'{Commands.STOP.value}'
 
         self.navigate.stop()
-        
+
         endTime = datetime.now()
         timeString = endTime - startTime
         return timeString.total_seconds()
 
     def getDirection(self, direction):
-        if direction == f'{Commands.FORWARD.value}'.encode():
+        if direction == f'{Commands.FORWARD.value}':
             self.navigate.forward()
             return "forward"
-        elif direction == f'{Commands.BACKWARD.value}'.encode():
+        elif direction == f'{Commands.BACKWARD.value}':
             self.navigate.backward()
             return "backward"
-        elif direction == f'{Commands.LEFT.value}'.encode():
+        elif direction == f'{Commands.LEFT.value}':
             self.navigate.left()
             return "left"
-        elif direction == f'{Commands.RIGHT.value}'.encode():
+        elif direction == f'{Commands.RIGHT.value}':
             self.navigate.right()
             return "right"
-        elif direction == f'{Commands.CCW.value}'.encode()':
+        elif direction == f'{Commands.CCW.value}':
             self.navigate.ccw()
             return "CCW"
-        elif direction == f'{Commands.CW.value}'.encode():
+        elif direction == f'{Commands.CW.value}':
             self.navigate.cw()
             return "CW"
 
@@ -148,18 +158,37 @@ class PathManagement:
         segment = line.split()
         direction = self.reverseDirection(segment[0])
         self.numLines -= 1
+
+        endTime = time.time() + float(segment[1])
+        while time.time() < endTime:
+            pass
+
+        self.navigate.stop()
+        time.sleep(0.5)
+
         return direction, segment[1]
 
     def reverseDirection(self, direction):
         if direction == "forward":
+            self.navigate.backward()
             return "backward"
         elif direction == "backward":
+            self.navigate.forward()
             return "forward"
         elif direction == "right":
+            self.navigate.left()
             return "left"
         elif direction == "left":
+            self.navigate.right()
             return "right"
         elif direction == "CW":
+            self.navigate.ccw()
             return "CCW"
         elif direction == "CCW":
+            self.navigate.cw()
             return "CW"
+
+    def listTasks(self):
+        tasks = os.listdir("/home/pi/firmware/tasks")
+        arr = ','.join(tasks)
+        self.ble.write(f"{arr}\n")
