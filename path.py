@@ -2,10 +2,10 @@
 
 import BLE
 import BLDC
-#import aruco
+import aruco
 import time
 import os
-#import camera
+import camera
 from commands import Commands
 from datetime import datetime
 
@@ -41,10 +41,10 @@ class FileManagement:
         self.file = open(TASKS_FOLDER + str(self.fileName), "a")
 
 class PathManagement:
-    def __init__(self, bleObject, navigationObject):
+    def __init__(self, bleObject, navigationObject, cameraObject):
         self.ble = bleObject
         self.navigate = navigationObject
-        #self.camera = cameraObject
+        self.camera = cameraObject
         self.numLines = 0
 
     def executePath(self, pathName):
@@ -99,13 +99,13 @@ class PathManagement:
         self.numLines += 1
 
     def atHomeBase(self):
-#        self.camera.capture("home")
-#        if not aruco.getIDs("home"):
-#            print("No aruco marker found. Reversing path back to home base.")
-        self.reversePath()
-        self.pathFile.writeLine("end", "0")        #no aruco id because path was reversed
-#        else:
-#            self.pathFile.writeLine("end", "0")
+        self.camera.capture("home")
+        if not aruco.getIds("home"):
+            print("No aruco marker found. Reversing path back to home base.")
+            self.reversePath()
+            self.pathFile.writeLine("end", "0")        #no aruco id because path was reversed
+        else:
+            self.pathFile.writeLine("end", "0")
 
 #    def setCheckpoint(self):
 #        rvec, tvec = aruco.estimatePose()
@@ -189,6 +189,6 @@ class PathManagement:
             return "CW"
 
     def listTasks(self):
-        tasks = os.listdir("/home/pi/firmware/tasks")
+        tasks = os.listdir("/home/pi/code/firmware/tasks")
         arr = ','.join(tasks)
         self.ble.write(f"{arr}\n")

@@ -1,7 +1,7 @@
 import path
 import BLE
 import BLDC
-#import camera
+import camera
 from commands import Commands
 
 PWM_PIN_FR = 10
@@ -18,8 +18,8 @@ JUMPER = True
 def init():
     wireless = BLE.Socket()
     wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY, JUMPER)
-    #cam = camera.Camera()
-    route = path.PathManagement(wireless, wally)
+    cam = camera.Camera()
+    route = path.PathManagement(wireless, wally, cam)
 
     wally.setSpeed(50)
 
