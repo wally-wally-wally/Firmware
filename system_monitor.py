@@ -1,5 +1,6 @@
 import threading
 import time
+import global_vars
 #import BMS
 
 from uart import UART
@@ -7,7 +8,7 @@ import i2c
 import lidar
 
 # Event set if Lidar detects object
-CollisionDetected = False
+#CollisionDetected = False
 #CollisionEvent = threading.Event()
 
 Lidar = None
@@ -36,14 +37,14 @@ def init():
     #for i in range(BMS.NUM_CELLS)
         #Cells[i] = BMS.Cell(i, enPin[i], I2c)
 
-def getAnglesFromDirection(dir):
-    if dir == 'F':
+def getAnglesFromDirection():
+    if global_vars.WallyDirection == 'F':
         return -45, 45
-    elif dir == 'R':
+    elif global_vars.WallyDirection == 'R':
         return 45, 135
-    elif dir == 'B':
+    elif global_vars.WallyDirection == 'B':
         return 135, 225
-    elif dir == 'L':
+    elif global_vars.WallyDirection == 'L':
         return 225, 315
 
 def inRange(ang, angL, angU):
@@ -55,7 +56,7 @@ def inRange(ang, angL, angU):
 
 def CollisionDetection():
 
-    angL, angU = getAnglesFromDirection('F')
+    angL, angU = getAnglesFromDirection()
 
     for i in range(len(Lidar.dist)):
         #print(str(l.ang[i]) + ": " + str(l.dist[i]))
@@ -69,7 +70,7 @@ def CollisionDetection():
                 #if(data[rounded] is True):
                 if obstruction is False:
                     #print('New obstruction', flush = True)
-                    CollisionDetected = True
+                    global_vars.CollisionDetected = True
                     #CollisionEvent.set()
                 obstruction = True
                 lidarData[rounded] = True
@@ -85,7 +86,7 @@ def CollisionDetection():
             break
     if obstruction is False and old is True:
         #print ('Obstruction Removed', flush = True)  
-        CollisionDetected = False
+        global_vars.CollisionDetected = False
         #CollisionEvent.clear()
 
 
