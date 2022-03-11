@@ -7,7 +7,8 @@ import i2c
 import lidar
 
 # Event set if Lidar detects object
-CollisionEvent = threading.Event()
+CollisionDetected = False
+#CollisionEvent = threading.Event()
 
 Lidar = None
 Uart = None
@@ -68,7 +69,8 @@ def CollisionDetection():
                 #if(data[rounded] is True):
                 if obstruction is False:
                     #print('New obstruction', flush = True)
-                    CollisionEvent.set()
+                    CollisionDetected = True
+                    #CollisionEvent.set()
                 obstruction = True
                 lidarData[rounded] = True
 
@@ -83,7 +85,8 @@ def CollisionDetection():
             break
     if obstruction is False and old is True:
         #print ('Obstruction Removed', flush = True)  
-        CollisionEvent.clear()
+        CollisionDetected = False
+        #CollisionEvent.clear()
 
 
 # Not Currently in use/tested
