@@ -109,6 +109,7 @@ class PathManagement:
         self.numLines += 1
 
     def atHomeBase(self):
+        time.sleep(0.5)
         self.camera.capture("home")
         if not aruco.getIds("home"):
             print("No aruco marker found. Reversing path back to home base.")
