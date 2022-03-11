@@ -68,15 +68,15 @@ class Navigation:
     def right(self):
         self.FR.setDirection('CW')  #backward
         self.FL.setDirection('CCW') #forward
-        self.BR.setDirection('CCW') #forward
-        self.BL.setDirection('CW')  #backward
+        self.BR.setDirection('CW')  #forward
+        self.BL.setDirection('CCW') #backward
         self.start()
 
     def left(self):
         self.FR.setDirection('CCW') #forward
         self.FL.setDirection('CW')  #backward
-        self.BR.setDirection('CW')  #backward
-        self.BL.setDirection('CCW') #forward
+        self.BR.setDirection('CCW') #backward
+        self.BL.setDirection('CW')  #forward
         self.start()
 
     def ccw(self):
