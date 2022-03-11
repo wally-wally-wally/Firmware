@@ -102,6 +102,7 @@ class PathManagement:
 #                self.setCheckpoint()
 
         self.atHomeBase()
+        self.pathFile.closeFile()
 
     def recordSegment(self, data):
         direction = self.getDirection(data)
@@ -117,6 +118,7 @@ class PathManagement:
             self.reversePath()
             self.pathFile.writeLine("end", "0")        #no aruco id because path was reversed
         else:
+            self.numLines = 0
             self.pathFile.openAppend()
             self.pathFile.writeLine("end", "0")
 

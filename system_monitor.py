@@ -15,7 +15,7 @@ I2c = None
 Charger = None
 Cells = [None] * 4
 
-DIST_THRESH = 800 # mm
+DIST_THRESH = 1000 # mm
 
 # Should be defined in BMS
 NUM_CELLS = 4
@@ -41,13 +41,13 @@ def init():
         #Cells[i] = BMS.Cell(i, enPin[i], I2c)
 
 def getAnglesFromDirection():
-    if global_vars.WallyDirection == 'F':
+    if global_vars.WallyDirection == 'B':
         return -45, 45
-    elif global_vars.WallyDirection == 'R':
-        return 45, 135
-    elif global_vars.WallyDirection == 'B':
-        return 135, 225
     elif global_vars.WallyDirection == 'L':
+        return 45, 135
+    elif global_vars.WallyDirection == 'F':
+        return 135, 225
+    elif global_vars.WallyDirection == 'R':
         return 225, 315
     elif global_vars.WallyDirection == 'N':
         return 0, 0
