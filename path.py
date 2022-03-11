@@ -4,8 +4,7 @@ import aruco
 import time
 import os
 import camera
-from system_monitor import CollidionDetected
-from ststem_monitor import WallyDirection
+import global_vars
 from commands import Commands
 from datetime import datetime
 
@@ -58,10 +57,10 @@ class PathManagement:
 
         endTime = time.time() + float(segment[1])
         while time.time() < endTime:
-            if CollisionDetected:
+            if global_vars.CollisionDetected:
                 timeLeft = endTime - time.time()
                 self.navigate.stop()
-                while CollisionDetected:
+                while global_vars.CollisionDetected:
                     time.sleep(0.2)
                 self.executeDirection(segment[0])
                 endTime = time.time() + timeLeft
@@ -71,22 +70,22 @@ class PathManagement:
     def executeDirection(self, direction):
         if direction == "forward":
             self.navigate.forward()
-            WallyDirection = 'F'
+            global_vars.WallyDirection = 'F'
         elif direction == "backward":
             self.navigate.backward()
-            WallyDirection = 'B'
+            global_vars.WallyDirection = 'B'
         elif direction == "right":
             self.navigate.right()
-            WallyDirection = 'R'
+            global_vars.WallyDirection = 'R'
         elif direction == "left":
             self.navigate.left()
-            WallyDirection = 'L'
+            global_vars.WallyDirection = 'L'
         elif direction == "CW":
             self.navigate.cw()
-            WallyDirection = 'N'
+            global_vars.WallyDirection = 'N'
         elif direction == "CCW":
             self.navigate.ccw()
-            WallyDirection = 'N'
+            global_vars.WallyDirection = 'N'
 #        elif direction == "checkpoint":
 #            do arm movement at designated aruco id
 
