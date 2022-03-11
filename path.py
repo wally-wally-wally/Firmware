@@ -66,6 +66,7 @@ class PathManagement:
                 endTime = time.time() + timeLeft
 
         self.navigate.stop()
+        time.sleep(0.5)
 
     def executeDirection(self, direction):
         if direction == "forward":
@@ -115,6 +116,7 @@ class PathManagement:
             self.reversePath()
             self.pathFile.writeLine("end", "0")        #no aruco id because path was reversed
         else:
+            self.pathFile.openAppend()
             self.pathFile.writeLine("end", "0")
 
 #    def setCheckpoint(self):

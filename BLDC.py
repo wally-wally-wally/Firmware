@@ -40,15 +40,21 @@ class Motor:
 class Navigation:
     def __init__(self, pwmPinFR, pwmPinFL, pwmPinBR, pwmPinBL, dirPinFR, dirPinFL, dirPinBR, dirPinBL, frequency, jumper):
         self.FR = Motor(pwmPinFR, dirPinFR, frequency)
+        time.sleep(0.2)
         self.FL = Motor(pwmPinFL, dirPinFL, frequency)
+        time.sleep(0.2)
 
         if jumper == False:
             self.BR = Motor(pwmPinBR, dirPinBR, frequency)
+            time.sleep(0.2)
             self.BL = Motor(pwmPinBL, dirPinBL, frequency)
+            time.sleep(0.2)
             self.jumper = False
         elif jumper == True:
             self.BR = Motor('NONE', dirPinBR, frequency)
+            time.sleep(0.2)
             self.BL = Motor('NONE', dirPinBL, frequency)
+            time.sleep(0.2)
             self.jumper = True
 
     def forward(self):
@@ -67,16 +73,16 @@ class Navigation:
 
     def right(self):
         self.FR.setDirection('CW')  #backward
-        self.FL.setDirection('CCW') #forward
+        self.FL.setDirection('CW')  #forward
         self.BR.setDirection('CCW') #forward
-        self.BL.setDirection('CW')  #backward
+        self.BL.setDirection('CCW') #backward
         self.start()
 
     def left(self):
         self.FR.setDirection('CCW') #forward
-        self.FL.setDirection('CW')  #backward
+        self.FL.setDirection('CCW') #backward
         self.BR.setDirection('CW')  #backward
-        self.BL.setDirection('CCW') #forward
+        self.BL.setDirection('CW')  #forward
         self.start()
 
     def ccw(self):

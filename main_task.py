@@ -2,6 +2,7 @@ import path
 import BLE
 import BLDC
 import camera
+import global_vars
 from commands import Commands
 
 PWM_PIN_FR = 10
@@ -16,6 +17,7 @@ PWM_FREQUENCY = 20000
 JUMPER = True
 
 def init():
+    global_vars.init()
     wireless = BLE.Socket()
     wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY, JUMPER)
     cam = camera.Camera()
@@ -40,3 +42,7 @@ def mainTask():
             route.executePath(data.split(",")[1])
         elif data == f'{Commands.LIST_TASKS.value}':
             route.listTasks()
+
+if __name__ == '__main__':
+    global_vars.init()
+    mainTask()
