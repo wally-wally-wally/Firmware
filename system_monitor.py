@@ -11,13 +11,11 @@ import lidar
 #CollisionDetected = False
 #CollisionEvent = threading.Event()
 
-Lidar = None
-Uart = None
 I2c = None
 Charger = None
 Cells = [None] * 4
 
-DIST_THRESH = 100 # mm
+DIST_THRESH = 800 # mm
 
 # Should be defined in BMS
 NUM_CELLS = 4
@@ -27,17 +25,23 @@ DISCHARGE_TOL = 1.01 # 1% Tolerance
 
 # Array of bools for each degree; True if an object is within DIST_THRESH
 lidarData = [False] * 360
-obstruction = False
 
 def init():
+
+    global Uart
+    global Lidar
     Uart = UART(lidar.PORT, lidar.BAUD)
     Lidar = lidar.Lidar(Uart)
+    global obstruction
+    obstruction = False
+    print(Lidar)
     #I2c = i2c.I2C(i2c.MAIN_CHANNEL)
     #Charger = BMS.Charger(I2c)
     #for i in range(BMS.NUM_CELLS)
         #Cells[i] = BMS.Cell(i, enPin[i], I2c)
 
 def getAnglesFromDirection():
+    return 45, 135
     if global_vars.WallyDirection == 'F':
         return -45, 45
     elif global_vars.WallyDirection == 'R':
@@ -55,6 +59,7 @@ def inRange(ang, angL, angU):
 
 
 def CollisionDetection():
+    global obstruction
 
     angL, angU = getAnglesFromDirection()
 
@@ -69,7 +74,7 @@ def CollisionDetection():
             if Lidar.dist[i] < DIST_THRESH and Lidar.dist[i] != 0:
                 #if(data[rounded] is True):
                 if obstruction is False:
-                    #print('New obstruction', flush = True)
+                    print('New obstruction', flush = True)
                     global_vars.CollisionDetected = True
                     #CollisionEvent.set()
                 obstruction = True
@@ -85,7 +90,7 @@ def CollisionDetection():
             obstruction = True
             break
     if obstruction is False and old is True:
-        #print ('Obstruction Removed', flush = True)  
+        print ('Obstruction Removed', flush = True)  
         global_vars.CollisionDetected = False
         #CollisionEvent.clear()
 
@@ -128,9 +133,17 @@ def CellRebalance():
 
 def sysMon():
     init()
+    #print(Lidar)
+    #print(obstruction)
 
     while True:
+        #time.sleep(1.5)
         Lidar.readData()
         Lidar.dataCorrection()
 
         CollisionDetection()
+
+if __name__ == '__main__':
+    global_vars.init()
+    sysMon()
+
