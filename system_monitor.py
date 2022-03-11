@@ -41,7 +41,6 @@ def init():
         #Cells[i] = BMS.Cell(i, enPin[i], I2c)
 
 def getAnglesFromDirection():
-    return 45, 135
     if global_vars.WallyDirection == 'F':
         return -45, 45
     elif global_vars.WallyDirection == 'R':
@@ -50,9 +49,12 @@ def getAnglesFromDirection():
         return 135, 225
     elif global_vars.WallyDirection == 'L':
         return 225, 315
+    elif global_vars.WallyDirection == 'N':
+        return 0, 0
+
 
 def inRange(ang, angL, angU):
-    if angL > 0:
+    if angL >= 0:
         return ang > angL and ang < angU
     else:
         return (ang > (angL + 360) and ang <= 360) or (ang < angU and ang >= 0)
@@ -133,6 +135,7 @@ def CellRebalance():
 
 def sysMon():
     init()
+#    print('sysmon', flush=True)
     #print(Lidar)
     #print(obstruction)
 
