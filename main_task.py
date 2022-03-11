@@ -42,7 +42,3 @@ def mainTask():
             route.executePath(data.split(",")[1])
         elif data == f'{Commands.LIST_TASKS.value}':
             route.listTasks()
-
-if __name__ == '__main__':
-    global_vars.init()
-    mainTask()
