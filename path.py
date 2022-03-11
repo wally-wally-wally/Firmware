@@ -1,11 +1,11 @@
-#commented out sections haven't been tested - need aruco marker
-
 import BLE
 import BLDC
 import aruco
 import time
 import os
 import camera
+from system_monitor import CollidionDetected
+from ststem_monitor import WallyDirection
 from commands import Commands
 from datetime import datetime
 
@@ -58,24 +58,35 @@ class PathManagement:
 
         endTime = time.time() + float(segment[1])
         while time.time() < endTime:
-            #do lidar stuff
-            pass
+            if CollisionDetected:
+                timeLeft = endTime - time.time()
+                self.navigate.stop()
+                while CollisionDetected:
+                    time.sleep(0.2)
+                self.executeDirection(segment[0])
+                endTime = time.time() + timeLeft
 
         self.navigate.stop()
 
     def executeDirection(self, direction):
         if direction == "forward":
             self.navigate.forward()
+            WallyDirection = 'F'
         elif direction == "backward":
             self.navigate.backward()
+            WallyDirection = 'B'
         elif direction == "right":
             self.navigate.right()
+            WallyDirection = 'R'
         elif direction == "left":
             self.navigate.left()
+            WallyDirection = 'L'
         elif direction == "CW":
             self.navigate.cw()
+            WallyDirection = 'N'
         elif direction == "CCW":
             self.navigate.ccw()
+            WallyDirection = 'N'
 #        elif direction == "checkpoint":
 #            do arm movement at designated aruco id
 
