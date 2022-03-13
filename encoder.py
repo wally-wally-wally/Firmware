@@ -18,7 +18,7 @@ class Encoder():
         data = data * (360 / 0xFFF)
         return data
 
-    def __del__():
+    def __del__(self):
         pass
 
 class MotorPosition(self):
@@ -33,6 +33,6 @@ class MotorPosition(self):
             angles.append(self.encoder.getAng())
         return angles
 
-    def __del__():
+    def __del__(self):
         pass
 
