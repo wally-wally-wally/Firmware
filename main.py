@@ -1,4 +1,5 @@
 import threading
+import global_vars
 from system_monitor import sysMon
 from main_task import mainTask
 
@@ -15,6 +16,7 @@ def init():
 
 if __name__ == '__main__':
   #  init()
+    global_vars.init()
     sysMon = threading.Thread(target=sysMon)
     mainTask = threading.Thread(target=mainTask)
        
@@ -23,3 +25,4 @@ if __name__ == '__main__':
 
     sysMon.join()
     mainTask.join()
+
