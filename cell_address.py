@@ -13,7 +13,7 @@ import time
 class CellAddress:
     def __init__(self, cell1EN, cell2EN, cell3EN, cell4EN, i2cChannel):
         self.cells = [cell1EN, cell2EN, cell3EN, cell4EN]
-        self.i2c = i2c.I2C(i2Channel)
+        self.i2c = i2c.I2C(i2cChannel)
 
         GPIO.init()
         for x in self.cells:
@@ -42,3 +42,37 @@ class CellAddress:
 
         data = self.i2c.read(address, BMS.SPECIAL_REG)
         self.i2c.write(address, BMS.SPECIAL_REG, (data & ~(1<<2)))      #set 2nd bit back to 0 (disable write)
+
+    def getAddress(self, cellNum):
+        if cellNum == 1:
+            GPIO.write(self.cells[0], 'HIGH')
+            time.sleep(0.2)
+            data = self.i2c.read_word(BMS.GAUGE_BASE_ADDR, BMS.SPECIAL_REG)
+            print(data)
+            time.sleep(0.2)
+            GPIO.write(self.cells[0], 'LOW')
+            time.sleep(0.2)
+        elif cellNum == 2:
+            GPIO.write(self.cells[1], 'HIGH')
+            time.sleep(0.2)
+            data = self.i2c.read_word(BMS.GAUGE_BASE_ADDR, BMS.SPECIAL_REG)
+            print(data)
+            time.sleep(0.2)
+            GPIO.write(self.cells[1], 'LOW')
+            time.sleep(0.2)
+        elif cellNum == 3:
+            GPIO.write(self.cells[2], 'HIGH')
+            time.sleep(0.2)
+            data = self.i2c.read_word(BMS.GAUGE_BASE_ADDR, BMS.SPECIAL_REG)
+            print(data)
+            time.sleep(0.2)
+            GPIO.write(self.cells[2], 'LOW')
+            time.sleep(0.2)
+        elif cellNum == 4:
+            GPIO.write(self.cells[3], 'HIGH')
+            time.sleep(0.2)
+            data = self.i2c.read_word(BMS.GAUGE_BASE_ADDR, BMS.SPECIAL_REG)
+            print(data)
+            time.sleep(0.2)
+            GPIO.write(self.cells[3], 'LOW')
+            time.sleep(0.2)

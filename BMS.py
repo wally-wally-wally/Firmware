@@ -36,16 +36,16 @@ class Cell:
         GPIO.write(self.enPin, 'HIGH')
 
     def readVoltage(self):                              #might need to be converted to an understandable value
-        return self.i2c.read(self.address, VOLT_REG_MSB)
+        return self.i2c.read_word(self.address, VOLT_REG_MSB)
 
     def dischargeCell(self):
-        data = self.i2c.read(self.address, SPECIAL_REG)
+        data = self.i2c.read_word(self.address, SPECIAL_REG)
         self.i2c.write(self.address, SPECIAL_REG, (data & ~(1<<1))) #set PIO to low power mode
         self.isDischarging = True
         return self.isDischarging
 
     def stopDischarge(self):
-        data = self.i2c.read(self.address, SPECIAL_REG)
+        data = self.i2c.read_word(self.address, SPECIAL_REG)
         self.i2c.write(self.address, SPECIAL_REG, (data | 1<<1))   #set PIO back to normal mode
         self.isDischarging = False
         return self.isDischarging
@@ -61,7 +61,7 @@ class Charger:
         GPIO.setPin(self.cePin, 'OUT', 'NONE')
         GPIO.setPin(self.qonPin, 'OUT', 'NONE')
         GPIO.write(self.qonPin, 'HIGH')
-        enableCharging()
+        #self.enableCharging()
 
     def reset(self):
         GPIO.write(self.qonPin, 'LOW')
@@ -77,12 +77,12 @@ class Charger:
 
     def enableCharging(self):
         GPIO.write(self.cePin, 'LOW')
-        data = self.i2c.read(CHG_BASE_ADDR, CHG_CTRL)
+        data = self.i2c.read_word(CHG_BASE_ADDR, CHG_CTRL)
         self.i2c.write(CHG_BASE_ADDR, CHG_CTRL, (data | 1<<5))
 
     def disableCharging(self):
         GPIO.write(self.cePin, 'HIGH')
-        data = self.i2c.read(CHG_BASE_ADDR, CHG_CTRL)
+        data = self.i2c.read_word(CHG_BASE_ADDR, CHG_CTRL)
         self.i2c.write(CHG_BASE_ADDR, CHG_CTRL, (data & ~(1<<5)))
 
     def checkChargeStatus(self):                       #can be modified to include the other states
@@ -93,7 +93,7 @@ class Charger:
             self.isCharging = False
 
     def readStatus(self):
-        data = int(self.i2c.read(CHG_BASE_ADDR, CHG_STAT), 2)
+        data = int(self.i2c.read_word(CHG_BASE_ADDR, CHG_STAT), 2)
         mask = int('00000111', 2)
 
         return bin(data & mask)
