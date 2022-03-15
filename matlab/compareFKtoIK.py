@@ -13,11 +13,11 @@ def compareFKtoIK(thetalist=None,tolerance=None,*args,**kwargs):
 
     success=0
 # compareFKtoIK.m:2
-    theta1=thetalist(1)
+    theta1=thetalist[0]
 # compareFKtoIK.m:3
-    theta2=thetalist(2)
+    theta2=thetalist[1]
 # compareFKtoIK.m:4
-    theta3=thetalist(3)
+    theta3=thetalist[2]
 # compareFKtoIK.m:5
     R_sc,p_sc,success=FK(theta1,theta2,theta3,tolerance,nargout=3)
 # compareFKtoIK.m:7

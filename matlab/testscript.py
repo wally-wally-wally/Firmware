@@ -17,58 +17,58 @@ if __name__ == '__main__':
 # testscript.m:8
     #input list for testing FK and IK, the results for both functions should be
 #the same
-    thetalist=concat([concat([0,0,90])])
+    thetalist=[0,0,90]
 # testscript.m:12
     
-    thetalist=concat([[thetalist],[concat([90,0,0])]])
+    thetalist=concat([thetalist,[90,0,0]])
 # testscript.m:13
     
-    thetalist=concat([[thetalist],[concat([0,45,45])]])
+    thetalist=concat([thetalist,[0,45,45]])
 # testscript.m:14
     
-    thetalist=concat([[thetalist],[concat([0,135,- 45])]])
+    thetalist=concat([thetalist,[0,135,- 45]])
 # testscript.m:15
     
-    thetalist=concat([[thetalist],[concat([0,180,- 90])]])
+    thetalist=concat([thetalist,[0,180,- 90]])
 # testscript.m:16
     
-    thetalist=concat([[thetalist],[concat([90,- 90,90])]])
+    thetalist=concat([thetalist,[90,- 90,90]])
 # testscript.m:17
     
-    thetalist=concat([[thetalist],[concat([90,- 45,45])]])
+    thetalist=concat([thetalist,[90,- 45,45]])
 # testscript.m:18
     
-    thetalist=concat([[thetalist],[concat([- 45,45,90])]])
+    thetalist=concat([thetalist,[- 45,45,90]])
 # testscript.m:19
     
-    thetalist=concat([[thetalist],[concat([- 45,90,45])]])
+    thetalist=concat([thetalist,[- 45,90,45]])
 # testscript.m:20
     
-    thetalist=concat([[thetalist],[concat([- 45,135,0])]])
+    thetalist=concat([thetalist,[- 45,135,0]])
 # testscript.m:21
     
-    thetalist=concat([[thetalist],[concat([- 90,90,90])]])
+    thetalist=concat([thetalist,[- 90,90,90]])
 # testscript.m:22
     
-    thetalist=concat([[thetalist],[concat([45,45,0])]])
+    thetalist=concat([thetalist,[45,45,0]])
 # testscript.m:23
     
-    thetalist=concat([[thetalist],[concat([- 90,135,45])]])
+    thetalist=concat([thetalist,[- 90,135,45]])
 # testscript.m:24
     
-    thetalist=concat([[thetalist],[concat([- 90,180,0])]])
+    thetalist=concat([thetalist,[- 90,180,0]])
 # testscript.m:25
     
-    thetalist=concat([[thetalist],[concat([5.5933,45,39.4067])]])
+    thetalist=concat([thetalist,[5.5933, 45, 39.4067]])
 # testscript.m:26
     
-    thetalist=concat([[thetalist],[concat([45,- 45,90])]])
+    thetalist=concat([thetalist,[45,- 45,90]])
 # testscript.m:27
     
-    i=size(thetalist)
+    i=int(size(thetalist)[1])
 # testscript.m:29
     for j in arange(1,i).reshape(-1):
-        if (compareFKtoIK(thetalist(j,arange(1,3)),tolerance) == 1):
+        if (compareFKtoIK(thetalist[j,arange(0,2)].reshape(-1),tolerance) == 1):
             print('FKtoIK test ' + j + ' failed')
         else:
             print('FKtoIK test ' + j + ' completed')

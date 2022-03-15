@@ -1,6 +1,10 @@
 # Generated with SMOP  0.41
 from smop.libsmop import *
 from checkJointAngleBounds import checkJointAngleBounds
+from numpy import pi, sin, cos, deg2rad
+
+#def deg2rad(deg):
+#    return deg * pi / 180.0
 # FK.m
 
     # Forward Kinematics function
@@ -33,7 +37,8 @@ def FK(theta1=None,theta2=None,theta3=None,tolerance=None,*args,**kwargs):
     if checkJointAngleBounds(theta1,theta2,theta3,tolerance) == 1:
         R_sc=concat([[0,0,0],[0,0,0],[0,0,0]])
 # FK.m:24
-        p_sc=concat([[0],[0],[0]])
+        #p_sc=concat([[0],[0],[0]])
+        p_sc=[0, 0, 0]
 # FK.m:25
         success=1
 # FK.m:26
@@ -74,32 +79,38 @@ def FK(theta1=None,theta2=None,theta3=None,tolerance=None,*args,**kwargs):
     #CCW around z-axis) 3x3 matrix
     w_1=concat([[0,1,0],[- 1,0,0],[0,0,0]])
 # FK.m:54
-    w_2=copy(w_1)
+    #w_2=copy(w_1)
+    w_2=concat([[0,1,0],[- 1,0,0],[0,0,0]])
 # FK.m:55
-    w_3=copy(w_2)
+    #w_3=copy(w_2)
+    w_3=concat([[0,1,0],[- 1,0,0],[0,0,0]])
 # FK.m:56
     
     # 1x3 vector
-    wv_1=concat([[0],[0],[1]])
+    #wv_1=concat([[0],[0],[1]])
+    wv_1=[0,0,1]
 # FK.m:60
-    wv_2=copy(wv_1)
+    #wv_2=copy(wv_1)
+    wv_2=[0,0,1]
 # FK.m:61
-    wv_3=copy(wv_2)
+    #wv_3=copy(wv_2)
+    wv_3=[0,0,1]
 # FK.m:62
     
     #1x3 vector
-    q_1=concat([[x_s1],[y_s1],[z_s1]])
+    q_1=[x_s1,y_s1,z_s1]
 # FK.m:66
-    q_2=concat([[x_s1],[(y_s1 + L1)],[z_s1]])
+    q_2=[x_s1,y_s1  + L1,z_s1]
 # FK.m:67
-    q_3=concat([[x_s1],[(y_s1 + L1 + L2)],[z_s1]])
+    #q_3=concat([[x_s1],[(y_s1 + L1 + L2)],[z_s1]])
+    q_3=[x_s1,y_s1  + L1 + L2,z_s1]
 # FK.m:68
     
-    v_1=cross(wv_1,q_1)
+    v_1=list(np.cross(wv_1,q_1))
 # FK.m:71
-    v_2=cross(wv_2,q_2)
+    v_2=list(np.cross(wv_2,q_2))
 # FK.m:72
-    v_3=cross(wv_3,q_3)
+    v_3=list(np.cross(wv_3,q_3))
 # FK.m:73
     
     #3x3 matrix
@@ -119,19 +130,34 @@ def FK(theta1=None,theta2=None,theta3=None,tolerance=None,*args,**kwargs):
 # FK.m:85
     
     #4x4 matrix
-    T_s1=concat([[R_s1,p_s1],[0,0,0,1]])
+    #print(R_s1)
+    #print(p_s1)
+    #print(p_s1)
+    #R_s1.resize(3,4, refcheck=False)
+    #R_s1.resize(7,7, refcheck=False)
+    R_s1 = np.c_[ R_s1, np.zeros(3) ]
+    R_12 = np.c_[ R_12, np.zeros(3) ]
+    R_23 = np.c_[ R_23, np.zeros(3) ]
+   # print(R_s1)
+    for i in range(3):
+        R_s1[i][3] = (p_s1[i])
+        R_12[i][3] = (p_12[i])
+        R_23[i][3] = (p_23[i])
+    #print(R_s1)
+    T_s1=concat([R_s1,[0,0,0,1]])
 # FK.m:89
-    T_12=concat([[R_12,p_12],[0,0,0,1]])
+    T_12=concat([R_12,[0,0,0,1]])
 # FK.m:90
-    T_23=concat([[R_23,p_23],[0,0,0,1]])
+    T_23=concat([R_23,[0,0,0,1]])
 # FK.m:91
     
     T_sc=dot(dot(dot(T_s1,T_12),T_23),M)
 # FK.m:94
     
-    R_sc=T_sc(arange(1,3),arange(1,3))
+    R_sc=T_sc[arange(0,2),arange(0,2)]
 # FK.m:97
-    p_sc=T_sc(arange(1,3),4)
+    p_sc=T_sc[arange(0,2),3]
+    p_sc = p_sc[0]
 # FK.m:98
     success=0
 # FK.m:99

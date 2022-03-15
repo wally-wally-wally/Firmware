@@ -1,6 +1,7 @@
 # Generated with SMOP  0.41
 from smop.libsmop import *
 from workspaceBoundsCheck import workspaceBoundsCheck
+from numpy import rad2deg, arccos, arctan2
 # IK.m
 
     # Inverse Kinematics function
@@ -56,17 +57,21 @@ def IK(p_sc=None,*args,**kwargs):
     z_s1=0
 # IK.m:42
     
-    p_s1=concat([[x_s1],[y_s1],[z_s1]])
+    #p_s1=concat([[x_s1],[y_s1],[z_s1]])
+    p_s1=[x_s1,y_s1,z_s1]
 # IK.m:43
     
     #if the contact point is in the workspace but the pose is infeasible,
     #the joint angle error case should catch it instead
+    #print(p_sc)
+    #print(p_s1)
+    # TODO UNCOMMENT
     if workspaceBoundsCheck(p_sc,p_s1) == 1:
         success=1
 # IK.m:49
-        thetalist_a=concat([[0],[0],[0]])
+        #thetalist_a=concat([[0],[0],[0]])
 # IK.m:50
-        thetalist_b=concat([[0],[0],[0]])
+        #thetalist_b=concat([[0],[0],[0]])
 # IK.m:51
         #disp('contact is outside of arm reach')
         return thetalist_a,thetalist_b,success
@@ -76,21 +81,35 @@ def IK(p_sc=None,*args,**kwargs):
     I=concat([[1,0,0],[0,1,0],[0,0,1]])
 # IK.m:57
     
-    x_1c=p_sc(1) - x_s1
+    x_1c=p_sc[0] - x_s1
 # IK.m:60
-    y_1c=p_sc(2) - y_s1
+    y_1c=p_sc[1] - y_s1
 # IK.m:61
     L=sqrt((x_1c - L3) ** 2 + y_1c ** 2)
 # IK.m:63
-    delta=atan2(y_1c,(x_1c - L3))
+    delta=arctan2(y_1c,(x_1c - L3))
 # IK.m:64
-    rho=acos((L1 ** 2 + L ** 2 - L2 ** 2) / (dot(dot(2,L1),L)))
+    rho_arg = (L1 ** 2 + L ** 2 - L2 ** 2) / (dot(dot(2,L1),L))
+    if rho_arg > 1:
+        rho_arg = 1
+    if rho_arg < -1:
+        rho_arg = -1
+    rho=arccos(rho_arg)
+    #print('rho_arg ' + str(rho_arg))
 # IK.m:65
     theta1a=90 - rad2deg(delta) - rad2deg(rho)
 # IK.m:66
     theta1b=90 - rad2deg(delta) + rad2deg(rho)
 # IK.m:67
-    omega=acos((L1 ** 2 + L2 ** 2 - L ** 2) / (dot(dot(2,L1),L2)))
+    omega_arg = (L1 ** 2 + L2 ** 2 - L ** 2) / (dot(dot(2,L1),L2))
+    if omega_arg > 1:
+        omega_arg = 1
+    if omega_arg < 1:
+        omega_arg = -1
+
+    omega=arccos(omega_arg)
+    #print('omega_arg ' + str(omega_arg))
+    #print('omega' + str(omega), flush = True)
 # IK.m:69
     theta2a=180 - rad2deg(omega)
 # IK.m:70

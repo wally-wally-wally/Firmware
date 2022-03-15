@@ -26,14 +26,14 @@ def workspaceBoundsCheck(p_sc=None,p_s1=None,*args,**kwargs):
     R2=L1 + L2
 # workspaceBoundsCheck.m:14
     
-    p_1c=concat([[p_sc(1) - p_s1(1)],[p_sc(2) - p_s1(2)],[p_sc(3) - p_s1(3)]])
+    p_1c=[p_sc[0] - p_s1[0],p_sc[1] - p_s1[1],p_sc[2] - p_s1[2]]
 # workspaceBoundsCheck.m:17
     
-    p_13=copy(p_1c)
+    p_13=[p_sc[0] - p_s1[0],p_sc[1] - p_s1[1],p_sc[2] - p_s1[2]]
 # workspaceBoundsCheck.m:20
-    p_13[1]=p_1c(1) - L3
+    p_13[1]=p_1c[0] - L3
 # workspaceBoundsCheck.m:21
-    r=sqrt(p_13(1) ** 2 + p_13(2) ** 2)
+    r=sqrt(p_13[0] ** 2 + p_13[1] ** 2)
 # workspaceBoundsCheck.m:23
     if (r > (R2 + eps)) or (r < (R1 - eps)):
         success=1
