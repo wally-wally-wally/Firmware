@@ -37,8 +37,6 @@ def workspaceBoundsCheck(p_sc=None,p_s1=None,*args,**kwargs):
     r=sqrt(p_13[0] ** 2 + p_13[1] ** 2)
 # workspaceBoundsCheck.m:23
     if (r > (R2 + eps) * BOUNDS_TOL_LOWER) or (r < (R1 - eps) * BOUNDS_TOL_UPPER):
-        print('r ' + str(r))
-        print('r2 eps ' + str(R2 + eps))
         success=1
 # workspaceBoundsCheck.m:26
     else:
