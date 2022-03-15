@@ -90,25 +90,27 @@ def IK(p_sc=None,*args,**kwargs):
     delta=arctan2(y_1c,(x_1c - L3))
 # IK.m:64
     rho_arg = (L1 ** 2 + L ** 2 - L2 ** 2) / (dot(dot(2,L1),L))
+    #print('rho_arg ' + str(rho_arg))
     if rho_arg > 1:
         rho_arg = 1
     if rho_arg < -1:
         rho_arg = -1
     rho=arccos(rho_arg)
-    #print('rho_arg ' + str(rho_arg))
+    #
 # IK.m:65
     theta1a=90 - rad2deg(delta) - rad2deg(rho)
 # IK.m:66
     theta1b=90 - rad2deg(delta) + rad2deg(rho)
 # IK.m:67
     omega_arg = (L1 ** 2 + L2 ** 2 - L ** 2) / (dot(dot(2,L1),L2))
+    #print('omega_arg ' + str(omega_arg))
     if omega_arg > 1:
         omega_arg = 1
-    if omega_arg < 1:
+    if omega_arg < -1:
         omega_arg = -1
 
     omega=arccos(omega_arg)
-    #print('omega_arg ' + str(omega_arg))
+    
     #print('omega' + str(omega), flush = True)
 # IK.m:69
     theta2a=180 - rad2deg(omega)
