@@ -69,9 +69,9 @@ def IK(p_sc=None,*args,**kwargs):
     if workspaceBoundsCheck(p_sc,p_s1) == 1:
         success=1
 # IK.m:49
-        #thetalist_a=concat([[0],[0],[0]])
+        thetalist_a=concat([[0],[0],[0]])
 # IK.m:50
-        #thetalist_b=concat([[0],[0],[0]])
+        thetalist_b=concat([[0],[0],[0]])
 # IK.m:51
         #disp('contact is outside of arm reach')
         return thetalist_a,thetalist_b,success

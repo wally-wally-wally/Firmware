@@ -6,7 +6,8 @@ from smop.libsmop import *
 #a filled in 2D circle with radius L1 + L2 + L3
 #workspace of arm poses can be considered to be a 2R semicircle workspace 
 #and then offset by the 3R arm
-    
+BOUNDS_TOL_UPPER = 0.9999
+BOUNDS_TOL_LOWER = 1.0001    
     
 @function
 def workspaceBoundsCheck(p_sc=None,p_s1=None,*args,**kwargs):
@@ -31,11 +32,13 @@ def workspaceBoundsCheck(p_sc=None,p_s1=None,*args,**kwargs):
     
     p_13=[p_sc[0] - p_s1[0],p_sc[1] - p_s1[1],p_sc[2] - p_s1[2]]
 # workspaceBoundsCheck.m:20
-    p_13[1]=p_1c[0] - L3
+    p_13[0]=p_1c[0] - L3
 # workspaceBoundsCheck.m:21
     r=sqrt(p_13[0] ** 2 + p_13[1] ** 2)
 # workspaceBoundsCheck.m:23
-    if (r > (R2 + eps)) or (r < (R1 - eps)):
+    if (r > (R2 + eps) * BOUNDS_TOL_LOWER) or (r < (R1 - eps) * BOUNDS_TOL_UPPER):
+        print('r ' + str(r))
+        print('r2 eps ' + str(R2 + eps))
         success=1
 # workspaceBoundsCheck.m:26
     else:
