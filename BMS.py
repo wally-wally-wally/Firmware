@@ -36,7 +36,10 @@ class Cell:
         GPIO.write(self.enPin, 'HIGH')
 
     def readVoltage(self):                              #might need to be converted to an understandable value
-        return self.i2c.read_word(self.address, VOLT_REG_MSB)
+        rawData = self.i2c.read_word(self.address, VOLT_REG_MSB)
+        rawData = rawData << 8 & 0xFF00 | rawData >> 8
+        rawData >>= 5
+        return rawData * 4.88
 
     def dischargeCell(self):
         data = self.i2c.read_word(self.address, SPECIAL_REG)
