@@ -12,7 +12,7 @@ import lidar
 #CollisionEvent = threading.Event()
 
 I2c = None
-Charger = None
+#Charger = None
 Cells = [None] * 4
 
 DIST_THRESH = 1000 # mm
@@ -20,7 +20,7 @@ DIST_THRESH = 1000 # mm
 # Should be defined in BMS
 NUM_CELLS = 4
 MAX_VOLT_THRESH = 4.2
-MIN_VOLT_THRESH = 4.158 # 2 * 0.99
+MIN_VOLT_THRESH = 3.2#4.158 # 2 * 0.99
 DISCHARGE_TOL = 1.01 # 1% Tolerance
 
 # Array of bools for each degree; True if an object is within DIST_THRESH
@@ -100,44 +100,52 @@ def CollisionDetection():
 # Not Currently in use/tested
 def CellRebalance():
     dischargingCells = False
-    Charger.checkChargeStatus()
         
-    if Charger.isCharging is False:
+    #if Charger.isCharging is False:
+    voltage = [0] * 4
+    for i in range(NUM_CELLS):
+        voltage[i] = Cells[i].readVoltage()
+
+    maxVoltage = max(voltage)
+    minVoltage = min(voltage)
+    minIndex = voltage.index(minVoltage)
+    #if maxVoltage >= MAX_VOLT_THRESH and minVoltage >= MIN_VOLT_THRESH:
+    #   Charger.enableDevices()
+    if (maxVoltage >= MAX_VOLT_THRESH) or (maxVoltage > minVoltage * DISCHARGE_TOL):
+        dischargingCells = True
+    #    Charger.disableCharging()
+        for i in range(NUM_CELLS):
+            if i != minIndex:
+                Cells[i].dischargeCell()
+
+    #elif Charger.isCharging is True and dischargingCells is True:
+    allCellsDischarged = True
+    while allCellsDischarged is True:
         voltage = [0] * 4
         for i in range(NUM_CELLS):
             voltage[i] = Cells[i].readVoltage()
-
-        maxVoltage = max(voltage)
-        minVoltage = min(voltage)
-        minIndex = voltage.index(minVoltage)
-        if maxVoltage >= MAX_VOLT_THRESH and minVoltage >= MIN_VOLT_THRESH:
-           Charger.enableDevices()
-        elif maxVoltage >= MAX_VOLT_THRESH:
-            dischargingCells = True
-            Charger.disableCharging()
-            for i in range(NUM_CELLS):
-                if i != minIndex:
-                    Cells[i].dischargeCell()
-
-    elif Charger.isCharging is True and dischargingCells is True:
-        allCellsDischarged = True
-        voltage = [0] * 4
-        for i in range(NUM_CELLS):
-            voltage[i] = Cells[i].readVoltage()
-            if voltage[i] <= (min(voltage) * DISCHARGE_TOL):
+            if voltage[i] <= (min(voltage) * DISCHARGE_TOL) and (voltage[i] < MAX_VOLT_THRESH):
                 Cells[i].stopDischarge()
             if Cells[i].isDischarging is True:
                 allCellsDischarged = False
+        
+        #time.sleep(0.5)
 
-        if allCellsDischarged is True:
-            Charger.enableCharging()
-            dischargingCells = False
+def CellMonitor():
+    #voltage = [0] * 4
+    for i in range(NUM_CELLS):
+        voltage = Cells[i].readVoltage()
+        if voltage < MIN_VOLT_THRESH:
+            #Notify App
+            pass
+    
 
 def sysMon():
     init()
 #    print('sysmon', flush=True)
     #print(Lidar)
     #print(obstruction)
+    #CellRebalance()
 
     while True:
         #time.sleep(1.5)
@@ -145,6 +153,8 @@ def sysMon():
         Lidar.dataCorrection()
 
         CollisionDetection()
+
+        #CellMonitor()
 
 if __name__ == '__main__':
     global_vars.init()
