@@ -42,4 +42,9 @@ class Arm():
             self.stepper[i].rotate(rotationAngle)
 
             self.currentAngle[i] = self.currentAngle[i] + angles[i][0]
-        
+
+    def openGrip(self):
+        self.gripper.open()
+
+    def closeGrip(self):
+        self.gripper.close()
