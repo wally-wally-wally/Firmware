@@ -10,6 +10,9 @@ STEPPER_ENABLE_PIN = 13
 STEPPER_STEP_PIN = [25, 7, 6]
 STEPPER_SPEED = 120
 
+FORWARD_DIRECTION = ['', 'CW', 'CCW']
+BACKWARD_DIRECTION = ['', 'CCW', 'CW']
+
 NUM_STEPPERS = 3
 
 class Arm():
@@ -30,11 +33,13 @@ class Arm():
     def move(self, x, y):
         angles = IK([x,y,0])[0]
         for i in range(NUM_STEPPERS):
-            rotationDirection = 'CW'
+            rotationDirection = FORWARD_DIRECTION[i]
             rotationAngle = angles[i][0] - self.currentAngle[i]
             if rotationAngle < 0:
-                rotationDirection = 'CCW'
+                rotationDirection = BACKWARD_DIRECTION[i]
                 rotationAngle = rotationAngle * -1
             self.stepper[i].setDirection(rotationDirection)
             self.stepper[i].rotate(rotationAngle)
+
+            self.currentAngle[i] = self.currentAngle[i] + angles[i][0]
         
