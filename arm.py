@@ -1,4 +1,5 @@
 import gripper
+import stepper
 import time
 import sys
 sys.path.insert(1, 'matlab')
@@ -14,7 +15,7 @@ NUM_STEPPERS = 3
 class Arm():
     def __init__(self):
         self.currentAngle = [0] * NUM_STEPPERS
-        self.steppers = [0] * NUM_STEPPERS
+        self.stepper = [0] * NUM_STEPPERS
         self.gripper = gripper.Gripper()
         for i in range(NUM_STEPPERS):
             self.stepper[i] = stepper.Stepper(STEPPER_STEP_PIN[i], STEPPER_DIR_PIN[i], STEPPER_ENABLE_PIN, STEPPER_SPEED)
