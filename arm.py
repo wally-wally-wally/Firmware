@@ -28,10 +28,10 @@ class Arm():
 
     # x, y: x and y coordinates to move the arm relative to the base of the arm in metres. 
     def move(self, x, y):
-        angles = IK([x,y,0])
+        angles = IK([x,y,0])[0]
         for i in range(NUM_STEPPERS):
             rotationDirection = 'CW'
-            rotationAngle = angles[i] - self.currentAngle[i]
+            rotationAngle = angles[i][0] - self.currentAngle[i]
             if rotationAngle < 0:
                 rotationDirection = 'CCW'
                 rotationAngle = rotationAngle * -1
