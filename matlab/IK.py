@@ -1,6 +1,7 @@
 # Generated with SMOP  0.41
 from smop.libsmop import *
 from workspaceBoundsCheck import workspaceBoundsCheck
+from checkJointAngleBounds import checkJointAngleBounds
 from numpy import rad2deg, arccos, arctan2
 # IK.m
 
@@ -122,9 +123,18 @@ def IK(p_sc=None,*args,**kwargs):
     theta3b=90 - theta1b - theta2b
 # IK.m:74
     thetalist_a=concat([theta1a,theta2a,theta3a])
+
 # IK.m:77
     thetalist_b=concat([theta1b,theta2b,theta3b])
 # IK.m:78
+    #bounds = checkJoinAngleBounds(theta1a,theta2a,theta3a)
+    #if bounds == 1:
+    #   success=1
+    #   thetalist_a=concat([[0],[0],[0]])
+    #   thetalist_b=concat([[0],[0],[0]])
+       #disp('contact is outside of arm reach')
+    #   return thetalist_a,thetalist_b,success
+
    # disp(thetalist_a)
    # disp(thetalist_b)
   # disp(success)

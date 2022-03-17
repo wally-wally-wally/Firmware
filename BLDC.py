@@ -58,31 +58,31 @@ class Navigation:
             self.jumper = True
 
     def forward(self):
-        self.FR.setDirection('CCW') #forward
+        self.FR.setDirection('CW') #forward
         self.FL.setDirection('CW')  #forward
         self.BR.setDirection('CCW') #forward
-        self.BL.setDirection('CW')  #forward
+        self.BL.setDirection('CCW')  #forward
         self.start()
 
     def backward(self):
-        self.FR.setDirection('CW')  #backward
+        self.FR.setDirection('CCW')  #backward
         self.FL.setDirection('CCW') #backward
         self.BR.setDirection('CW')  #backward
-        self.BL.setDirection('CCW') #backward
+        self.BL.setDirection('CW') #backward
         self.start()
 
     def right(self):
-        self.FR.setDirection('CW')  #backward
+        self.FR.setDirection('CCW')  #backward
         self.FL.setDirection('CW') #forward
         self.BR.setDirection('CCW')  #forward
-        self.BL.setDirection('CCW') #backward
+        self.BL.setDirection('CW') #backward
         self.start()
 
     def left(self):
-        self.FR.setDirection('CCW') #forward
+        self.FR.setDirection('CW') #forward
         self.FL.setDirection('CCW')  #backward
         self.BR.setDirection('CW') #backward
-        self.BL.setDirection('CW')  #forward
+        self.BL.setDirection('CCW')  #forward
         self.start()
 
     def ccw(self):

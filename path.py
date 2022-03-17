@@ -157,16 +157,21 @@ class PathManagement:
             self.ble.write(f"0\n") #no aruco
         else:
             self.ble.write(f"1\n") #found aruco
+            self.arm.enable()
             data = self.ble.read()
 
             while data != f'{Commands.SET_CHECKPOINT.value}':
                 if data == f'{Commands.ARM_UP.value}':
+                    print("arm up")
                     self.moveArm(0, self.INCREMENT)
                 elif data == f'{Commands.ARM_DOWN.value}':
+                    print("arm down")
                     self.moveArm(0, -self.INCREMENT)
                 elif data == f'{Commands.ARM_FORWARD.value}':
+                    print("arm forward")
                     self.moveArm(self.INCREMENT, 0)
                 elif data == f'{Commands.ARM_BACKWARD.value}':
+                    print("arm back")
                     self.moveArm(-self.INCREMENT, 0)
                 elif data == f'{Commands.TOGGLE_GRIPPER.value}':
                     self.writeArmPosition()
@@ -183,6 +188,7 @@ class PathManagement:
                 data = self.ble.read()
 
             self.writeArmPosition()
+            self.arm.disable()
 
     def moveArm(self, xDiff, yDiff):
         self.ble.setBlocking(False)
@@ -190,11 +196,13 @@ class PathManagement:
         while True:
             try:
                 data = self.ble.read()
+                print('stopping arm :)', flush =True)
                 assert data == f'{Commands.STOP.value}'
                 break
             except:
                 position1, position2 = self.arm.getCurrentPosition()
                 self.arm.move(position1 + xDiff, position2 + yDiff)
+                #time.sleep(1)
 
         self.ble.setBlocking(True)
 
@@ -289,6 +297,6 @@ class PathManagement:
             return "CW"
 
     def listTasks(self):
-        tasks = os.listdir("/home/pi/firmware/tasks")
+        tasks = os.listdir("/home/pi/code/firmware/tasks")
         arr = ','.join(tasks)
         self.ble.write(f"{arr}\n")

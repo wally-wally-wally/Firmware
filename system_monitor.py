@@ -16,7 +16,7 @@ import lidar
 #Charger = None
 Cells = [None] * 4
 
-DIST_THRESH = 1000 # mm
+DIST_THRESH = 800 # mm
 
 # Should be defined in BMS
 NUM_CELLS = 4
@@ -49,13 +49,13 @@ def init():
 
 def getAnglesFromDirection():
     if global_vars.WallyDirection == 'B':
-        return -40, 40
+        return -35, 35
     elif global_vars.WallyDirection == 'L':
-        return 50, 130
+        return 55, 125
     elif global_vars.WallyDirection == 'F':
-        return 140, 220
+        return 145, 215
     elif global_vars.WallyDirection == 'R':
-        return 230, 310
+        return 235, 305
     elif global_vars.WallyDirection == 'N':
         return 0, 0
 
@@ -84,6 +84,7 @@ def CollisionDetection():
                 #if(data[rounded] is True):
                 if obstruction is False:
                     print('New obstruction', flush = True)
+                    print(Lidar.ang[i], flush = True)
                     global_vars.CollisionDetected = True
                     #CollisionEvent.set()
                 obstruction = True
@@ -96,6 +97,8 @@ def CollisionDetection():
     obstruction = False
     for i in range(angL, angU):
         if lidarData[i] is True:
+            print(i, flush = True)
+            #print(Lidar.dist[i], flush = True)
             obstruction = True
             break
     if obstruction is False and old is True:

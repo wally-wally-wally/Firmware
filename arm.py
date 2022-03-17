@@ -17,13 +17,15 @@ NUM_STEPPERS = 3
 
 class Arm():
     def __init__(self):
-        self.currentAngle = [0] * NUM_STEPPERS
-        self.currentPosition = [0] * 2 # x, y
+        #self.currentAngle = [0] * NUM_STEPPERS
+        self.currentAngle = [-60, 60, 90]
+        self.currentPosition = [0.37, -0.20]# * 2 # x, y
         self.gripperOpen = False
         self.stepper = [0] * NUM_STEPPERS
         self.gripper = gripper.Gripper()
         for i in range(NUM_STEPPERS):
             self.stepper[i] = stepper.Stepper(STEPPER_STEP_PIN[i], STEPPER_DIR_PIN[i], STEPPER_ENABLE_PIN, STEPPER_SPEED)
+        self.disable()
 
     def enable(self):
         self.stepper[0].enableStepper()
@@ -33,7 +35,13 @@ class Arm():
 
     # x, y: x and y coordinates to move the arm relative to the base of the arm in metres. 
     def move(self, x, y):
-        angles = IK([x,y,0])[0]
+        print('moving:', flush = True)
+        angles, _, success = IK([x,y,0])
+        print('success' + str(success), flush=True)
+        print('angle:')
+        print(angles)
+        if success == 1:
+            return 
         for i in range(NUM_STEPPERS):
             rotationDirection = FORWARD_DIRECTION[i]
             rotationAngle = angles[i][0] - self.currentAngle[i]
