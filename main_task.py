@@ -2,6 +2,7 @@ import path
 import BLE
 import BLDC
 import camera
+import arm
 import global_vars
 from commands import Commands
 
@@ -21,7 +22,8 @@ def init():
     wireless = BLE.Socket()
     wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY, JUMPER)
     cam = camera.Camera()
-    route = path.PathManagement(wireless, wally, cam)
+    arm = arm.Arm()
+    route = path.PathManagement(wireless, wally, cam, arm)
 
     wally.setSpeed(50)
 
@@ -32,13 +34,23 @@ def init():
 
 def mainTask():
     wireless, route = init()
+    previouslyLow = False
 
     while True:
-        data = wireless.read()
+        try:
+            wireless.setBlocking(False)
+            data = wireless.read()
+            wireless.setBlocking(True)
 
-        if data.startswith(f'{Commands.START_RECORDING.value}'):
-            route.recordPath(data.split(",")[1])
-        elif data.startswith(f'{Commands.RUN_TASK.value}'):
-            route.executePath(data.split(",")[1])
-        elif data == f'{Commands.LIST_TASKS.value}':
-            route.listTasks()
+            if data.startswith(f'{Commands.START_RECORDING.value}'):
+                route.recordPath(data.split(",")[1])
+            elif data.startswith(f'{Commands.RUN_TASK.value}'):
+                route.executePath(data.split(",")[1])
+            elif data == f'{Commands.LIST_TASKS.value}':
+                route.listTasks()
+        except:
+            wireless.setBlocking(True)
+
+            if global_vars.LowBattDetected and previouslyLow == False:
+                previouslyLow = True
+                wireless.write(f"{FirmwareCommands.BATTERY.value}\n")
