@@ -11,17 +11,19 @@ class Commands(IntEnum):
     STOP = 6
 
     #Arm controls
-    #ADD_CHECKPOINT
-    #ARM_UP
-    #ARM_DOWN
-    #ARM_LEFT
-    #ARM_RIGHT
-    #ARM_FORWARD
-    #ARM_BACKWARD
-    #SET_CHEKPOINT
+    ADD_CHECKPOINT = 7
+    ARM_UP = 8
+    ARM_DOWN = 9
+    ARM_LEFT = 10
+    ARM_RIGHT = 11
+    ARM_FORWARD = 12
+    ARM_BACKWARD = 13
+    SET_CHEKPOINT = 14
 
     #Task Controls
     START_RECORDING = 15
     END_RECORDING = 16
     RUN_TASK = 17
     LIST_TASKS = 18
+
+    TOGGLE_GRIPPER = 19
