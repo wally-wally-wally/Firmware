@@ -168,20 +168,18 @@ class PathManagement:
             data = self.ble.read()
 
             while data != f'{Commands.SET_CHECKPOINT.value}':
-                #position1, position2 = self.arm.getCurrentPosition()
-
                 if data == f'{Commands.ARM_UP.value}':
-                    #self.arm.move(position1, position2 + self.INCREMENT)
                     print("arm up")
+                    self.moveArm(0, self.INCREMENT)
                 elif data == f'{Commands.ARM_DOWN.value}':
-                    #self.arm.move(position1, position2 - self.INCREMENT)
                     print("arm down")
+                    self.moveArm(0, -self.INCREMENT)
                 elif data == f'{Commands.ARM_FORWARD.value}':
-                    #self.arm.move(position1 + self.INCREMENT, position2)
                     print("arm forward")
+                    self.moveArm(self.INCREMENT, 0)
                 elif data == f'{Commands.ARM_BACKWARD.value}':
-                    #self.arm.move(position1 - self.INCREMENT, position2)
                     print("arm backward")
+                    self.moveArm(-self.INCREMENT, 0)
                 elif data == f'{Commands.TOGGLE_GRIPPER.value}':
                     self.writeArmPosition()
                     print("toggling gripper")
@@ -194,10 +192,27 @@ class PathManagement:
                 #        self.arm.openGrip()
                         self.pathFile.writeLine("gripper", "1")
                         self.numLines += 1
+
                 data = self.ble.read()
 
             self.writeArmPosition()
             print("Set checkpoint")
+
+    def moveArm(self, xDiff, yDiff):
+        self.ble.setBlocking(False)
+
+        while True:
+            try:
+                data = self.ble.read()
+                assert data == f'{Commands.STOP.value}'
+                print("stopping arm")
+                break
+            except:
+                pass
+                #position1, position2 = self.arm.getCurrentPosition()
+                #self.arm.move(position1 + xDiff, position2 + yDiff)
+
+        self.ble.setBlocking(True)
 
     def setGripper(self):
         #status = self.arm.isOpen()

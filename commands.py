@@ -27,3 +27,6 @@ class Commands(IntEnum):
     LIST_TASKS = 18
 
     TOGGLE_GRIPPER = 19
+
+class FirmwareCommands(IntEnum):
+    BATTERY_LOW = 0

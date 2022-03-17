@@ -26,6 +26,9 @@ class Socket:
     def write(self, data):
         self.client.send(data)
 
+    def setBlocking(self, blocking):
+        self.client.setblocking(-1 if blocking else 0)
+
     def disconnect(self):
         self.client.close()
         self.server.close()

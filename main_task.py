@@ -34,13 +34,23 @@ def init():
 
 def mainTask():
     wireless, route = init()
+    previouslyLow = False
 
     while True:
-        data = wireless.read()
+        try:
+            wireless.setBlocking(False)
+            data = wireless.read()
+            wireless.setBlocking(True)
 
-        if data.startswith(f'{Commands.START_RECORDING.value}'):
-            route.recordPath(data.split(",")[1])
-        elif data.startswith(f'{Commands.RUN_TASK.value}'):
-            route.executePath(data.split(",")[1])
-        elif data == f'{Commands.LIST_TASKS.value}':
-            route.listTasks()
+            if data.startswith(f'{Commands.START_RECORDING.value}'):
+                route.recordPath(data.split(",")[1])
+            elif data.startswith(f'{Commands.RUN_TASK.value}'):
+                route.executePath(data.split(",")[1])
+            elif data == f'{Commands.LIST_TASKS.value}':
+                route.listTasks()
+        except:
+            wireless.setBlocking(True)
+
+            if global_vars.LowBattDetected and previouslyLow == False:
+                previouslyLow = True
+                wireless.write(f"{FirmwareCommands.BATTERY.value}\n")
