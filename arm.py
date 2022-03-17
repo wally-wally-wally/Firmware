@@ -18,6 +18,8 @@ NUM_STEPPERS = 3
 class Arm():
     def __init__(self):
         self.currentAngle = [0] * NUM_STEPPERS
+        self.currentPosition = [0] * 2 # x, y
+        self.isOpen = False
         self.stepper = [0] * NUM_STEPPERS
         self.gripper = gripper.Gripper()
         for i in range(NUM_STEPPERS):
@@ -43,8 +45,18 @@ class Arm():
 
             self.currentAngle[i] = self.currentAngle[i] + angles[i][0]
 
+        self.currentPosition = [x, y]
+
     def openGrip(self):
         self.gripper.open()
+        self.isOpen = True
 
     def closeGrip(self):
         self.gripper.close()
+        self.isOpen = False
+
+    def isOpen(self):
+        return self.isOpen
+
+    def getCurrentPosition(self):
+        return self.currentPosition
