@@ -1,9 +1,9 @@
 import BLE
 import BLDC
-#import aruco
+import aruco
 import time
 import os
-#import camera
+import camera
 import global_vars
 from commands import Commands
 from datetime import datetime
@@ -43,15 +43,17 @@ class PathManagement:
 
     INCREMENT = 0.05
 
-    def __init__(self, bleObject, navigationObject): #add cam, and arm object
+    def __init__(self, bleObject, navigationObject, cameraObject, armObject):
         self.ble = bleObject
         self.navigate = navigationObject
-        #self.camera = cameraObject
-        #self.arm = armObject
+        self.camera = cameraObject
+        self.arm = armObject
         self.armMoving = False
         self.numLines = 0
 
     def executePath(self, pathName):
+        self.setGripper()
+
         with open(TASKS_FOLDER + str(pathName)) as f:
             for index, line in enumerate(f):
                 self.executeSegment(line.strip())
@@ -81,42 +83,32 @@ class PathManagement:
 
         if direction == "forward":
             self.navigate.forward()
-            print("forward")
             global_vars.WallyDirection = 'F'
         elif direction == "backward":
             self.navigate.backward()
-            print("backward")
             global_vars.WallyDirection = 'B'
         elif direction == "right":
             self.navigate.right()
-            print("right")
             global_vars.WallyDirection = 'R'
         elif direction == "left":
             self.navigate.left()
-            print("left")
             global_vars.WallyDirection = 'L'
         elif direction == "CW":
             self.navigate.cw()
-            print("CW")
             global_vars.WallyDirection = 'N'
         elif direction == "CCW":
             self.navigate.ccw()
-            print("CCW")
             global_vars.WallyDirection = 'N'
         elif direction == "gripper":
             position1 = args[1]
-
             if position1 == "1":
-                #self.arm.openGrip()
-                print("open grip")
+                self.arm.openGrip()
             elif position1 == "0":
-                #self.arm.closeGrip()
-                print("close grip")
+                self.arm.closeGrip()
             self.armMoving = True
         elif direction == "arm":
             position1, position2 = args[1], args[2]
-            #self.arm.move(position1, position2)
-            print("moving arm")
+            self.arm.move(position1, position2)
             self.armMoving = True
 
     def recordPath(self, pathName):
@@ -146,57 +138,51 @@ class PathManagement:
         self.numLines += 1
 
     def atHomeBase(self):
-        #time.sleep(0.5)
-        #self.camera.capture("home")
-        #if not aruco.getIds("home"):
-        print("No aruco marker found. Reversing path back to home base.")
-        self.reversePath()
-        self.pathFile.writeLine("end", "0")
-        #else:
-        #    self.numLines = 0
-        #    self.pathFile.openAppend()
-        #    self.pathFile.writeLine("end", "0")
+        time.sleep(0.5)
+        self.camera.capture("home")
+        if not aruco.getIds("home"):
+            print("No aruco marker found. Reversing path back to home base.")
+            self.reversePath()
+            self.pathFile.writeLine("end", "0")
+        else:
+            self.numLines = 0
+            self.pathFile.openAppend()
+            self.pathFile.writeLine("end", "0")
 
     def setCheckpoint(self):
-        #time.sleep(0.5)
-        #self.camera.capture("checkpoint")
-        #if not aruco.getIds("checkpoint"):
-        #    print("Error: no aruco marker found. Can't set checkpoint here")
-        #    self.ble.write(f"0\n") #no aruco
-        if True: #else:
+        time.sleep(0.5)
+        self.camera.capture("checkpoint")
+        if not aruco.getIds("checkpoint"):
+            print("Error: no aruco marker found. Can't set checkpoint here")
+            self.ble.write(f"0\n") #no aruco
+        else:
             self.ble.write(f"1\n") #found aruco
             data = self.ble.read()
 
             while data != f'{Commands.SET_CHECKPOINT.value}':
                 if data == f'{Commands.ARM_UP.value}':
-                    print("arm up")
                     self.moveArm(0, self.INCREMENT)
                 elif data == f'{Commands.ARM_DOWN.value}':
-                    print("arm down")
                     self.moveArm(0, -self.INCREMENT)
                 elif data == f'{Commands.ARM_FORWARD.value}':
-                    print("arm forward")
                     self.moveArm(self.INCREMENT, 0)
                 elif data == f'{Commands.ARM_BACKWARD.value}':
-                    print("arm backward")
                     self.moveArm(-self.INCREMENT, 0)
                 elif data == f'{Commands.TOGGLE_GRIPPER.value}':
                     self.writeArmPosition()
-                    print("toggling gripper")
-                    status = True #self.arm.isOpen()
+                    status = self.arm.isOpen()
                     if status == True:
-                #        self.arm.closeGrip()
+                        self.arm.closeGrip()
                         self.pathFile.writeLine("gripper", "0")
                         self.numLines += 1
                     elif status == False:
-                #        self.arm.openGrip()
+                        self.arm.openGrip()
                         self.pathFile.writeLine("gripper", "1")
                         self.numLines += 1
 
                 data = self.ble.read()
 
             self.writeArmPosition()
-            print("Set checkpoint")
 
     def moveArm(self, xDiff, yDiff):
         self.ble.setBlocking(False)
@@ -205,24 +191,21 @@ class PathManagement:
             try:
                 data = self.ble.read()
                 assert data == f'{Commands.STOP.value}'
-                print("stopping arm")
                 break
             except:
-                pass
-                #position1, position2 = self.arm.getCurrentPosition()
-                #self.arm.move(position1 + xDiff, position2 + yDiff)
+                position1, position2 = self.arm.getCurrentPosition()
+                self.arm.move(position1 + xDiff, position2 + yDiff)
 
         self.ble.setBlocking(True)
 
     def setGripper(self):
-        #status = self.arm.isOpen()
-        #if status == False:
-        #    self.arm.openGrip()
-        print("setting grip")
+        status = self.arm.isOpen()
+        if status == False:
+            self.arm.openGrip()
 
     def writeArmPosition(self):
-        #position1, position2 = self.arm.getCurrentPosition()
-        self.pathFile.writeLine("arm", "position1", "position2")
+        position1, position2 = self.arm.getCurrentPosition()
+        self.pathFile.writeLine("arm", position1, position2)
         self.numLines += 1
 
     def getTime(self):
@@ -241,27 +224,21 @@ class PathManagement:
     def getDirection(self, direction):
         if direction == f'{Commands.FORWARD.value}':
             self.navigate.forward()
-            print("forward")
             return "forward"
         elif direction == f'{Commands.BACKWARD.value}':
             self.navigate.backward()
-            print("backward")
             return "backward"
         elif direction == f'{Commands.LEFT.value}':
             self.navigate.left()
-            print("left")
             return "left"
         elif direction == f'{Commands.RIGHT.value}':
             self.navigate.right()
-            print("right")
             return "right"
         elif direction == f'{Commands.CCW.value}':
             self.navigate.ccw()
-            print("CCW")
             return "CCW"
         elif direction == f'{Commands.CW.value}':
             self.navigate.cw()
-            print("CW")
             return "CW"
 
     def reversePath(self):
@@ -294,27 +271,21 @@ class PathManagement:
     def reverseDirection(self, direction):
         if direction == "forward":
             self.navigate.backward()
-            print("backward")
             return "backward"
         elif direction == "backward":
             self.navigate.forward()
-            print("forward")
             return "forward"
         elif direction == "right":
             self.navigate.left()
-            print("left")
             return "left"
         elif direction == "left":
             self.navigate.right()
-            print("right")
             return "right"
         elif direction == "CW":
             self.navigate.ccw()
-            print("CCW")
             return "CCW"
         elif direction == "CCW":
             self.navigate.cw()
-            print("CW")
             return "CW"
 
     def listTasks(self):

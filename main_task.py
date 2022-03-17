@@ -1,8 +1,8 @@
 import path
 import BLE
 import BLDC
-#import camera
-#import arm
+import camera
+import arm
 import global_vars
 from commands import Commands
 
@@ -21,9 +21,9 @@ def init():
     global_vars.init()
     wireless = BLE.Socket()
     wally = BLDC.Navigation(PWM_PIN_FR, PWM_PIN_FL, PWM_PIN_BR, PWM_PIN_BL, DIR_PIN_FR, DIR_PIN_FL, DIR_PIN_BR, DIR_PIN_BL, PWM_FREQUENCY, JUMPER)
-    #cam = camera.Camera()
-    #arm = arm.Arm()
-    route = path.PathManagement(wireless, wally) #add cam, and arm object
+    cam = camera.Camera()
+    arm = arm.Arm()
+    route = path.PathManagement(wireless, wally, cam, arm)
 
     wally.setSpeed(50)
 
