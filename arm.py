@@ -10,8 +10,8 @@ STEPPER_ENABLE_PIN = 13
 STEPPER_STEP_PIN = [25, 7, 6]
 STEPPER_SPEED = 120
 
-FORWARD_DIRECTION = ['', 'CW', 'CCW']
-BACKWARD_DIRECTION = ['', 'CCW', 'CW']
+FORWARD_DIRECTION = ['CW', 'CW', 'CW']
+BACKWARD_DIRECTION = ['CCW', 'CCW', 'CCW']
 
 NUM_STEPPERS = 3
 
@@ -60,3 +60,7 @@ class Arm():
 
     def getCurrentPosition(self):
         return self.currentPosition
+
+    def setOrigin(self):
+        self.currentAngle = [0] * NUM_STEPPERS
+        
