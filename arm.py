@@ -49,7 +49,7 @@ class Arm():
 
     def openGrip(self):
         self.gripper.open()
-        self.isOpen = True
+        self.gripperOpen = True
 
     def closeGrip(self):
         self.gripper.close()
