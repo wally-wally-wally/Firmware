@@ -60,22 +60,25 @@ class PathManagement:
 
     def executeSegment(self, line):
         segment = line.split()
-        self.executeDirection(*segment)
+        timed = self.executeDirection(*segment)
 
-        if not self.armMoving:
+        if timed:
             endTime = time.time() + float(segment[1])
+
             while time.time() < endTime:
                 if global_vars.CollisionDetected:
                     timeLeft = endTime - time.time()
                     self.navigate.stop()
+
                     while global_vars.CollisionDetected:
                         time.sleep(0.2)
+
                     self.executeDirection(*segment)
                     endTime = time.time() + timeLeft
 
             self.navigate.stop()
+            self.arm.stopSteppers()
 
-        self.armMoving = False
         time.sleep(0.5)
 
     def executeDirection(self, *args):
@@ -99,17 +102,25 @@ class PathManagement:
         elif direction == "CCW":
             self.navigate.ccw()
             global_vars.WallyDirection = 'N'
+        elif data == "arm_up":
+            self.arm.startStepper(1, 'B')
+        elif data == "arm_down":
+            self.arm.startStepper(1, 'F')
+        elif data == "arm_forward":
+            self.arm.startStepper(0, 'F')
+        elif data == "arm_back":
+            self.arm.startStepper(0, 'B')
         elif direction == "gripper":
             position1 = args[1]
+
             if position1 == "1":
                 self.arm.openGrip()
             elif position1 == "0":
                 self.arm.closeGrip()
-            self.armMoving = True
-        elif direction == "arm":
-            position1, position2 = args[1], args[2]
-            self.arm.move(position1, position2)
-            self.armMoving = True
+
+            return False
+
+        return True
 
     def recordPath(self, pathName):
         self.pathFile = FileManagement(pathName)
@@ -133,7 +144,7 @@ class PathManagement:
 
     def recordSegment(self, data):
         direction = self.getDirection(data)
-        travelTime = self.getTime()
+        travelTime = self.getTime(self.navigate.stop)
         self.pathFile.writeLine(direction, travelTime)
         self.numLines += 1
 
@@ -152,6 +163,7 @@ class PathManagement:
     def setCheckpoint(self):
         time.sleep(0.5)
         self.camera.capture("checkpoint")
+
         if not aruco.getIds("checkpoint"):
             print("Error: no aruco marker found. Can't set checkpoint here")
             self.ble.write(f"0\n") #no aruco
@@ -161,21 +173,9 @@ class PathManagement:
             data = self.ble.read()
 
             while data != f'{Commands.SET_CHECKPOINT.value}':
-                if data == f'{Commands.ARM_UP.value}':
-                    print("arm up")
-                    self.moveArm(0, self.INCREMENT)
-                elif data == f'{Commands.ARM_DOWN.value}':
-                    print("arm down")
-                    self.moveArm(0, -self.INCREMENT)
-                elif data == f'{Commands.ARM_FORWARD.value}':
-                    print("arm forward")
-                    self.moveArm(self.INCREMENT, 0)
-                elif data == f'{Commands.ARM_BACKWARD.value}':
-                    print("arm back")
-                    self.moveArm(-self.INCREMENT, 0)
-                elif data == f'{Commands.TOGGLE_GRIPPER.value}':
-                    self.writeArmPosition()
+                if data == f'{Commands.TOGGLE_GRIPPER.value}':
                     status = self.arm.isOpen()
+
                     if status == True:
                         self.arm.closeGrip()
                         self.pathFile.writeLine("gripper", "0")
@@ -184,10 +184,14 @@ class PathManagement:
                         self.arm.openGrip()
                         self.pathFile.writeLine("gripper", "1")
                         self.numLines += 1
+                else:
+                    armMovement = self.getArmMovement(data)
+                    travelTime = self.getTime(self.arm.stopSteppers)
+                    self.pathFile.writeLine(armMovement, travelTime)
+                    self.numLines += 1
 
                 data = self.ble.read()
 
-            self.writeArmPosition()
             self.arm.disable()
 
     def moveArm(self, xDiff, yDiff):
@@ -216,14 +220,14 @@ class PathManagement:
         self.pathFile.writeLine("arm", position1, position2)
         self.numLines += 1
 
-    def getTime(self):
+    def getTime(self, stopFn):
         startTime = datetime.now()
 
         isStop = self.ble.read()
 
         assert isStop == f'{Commands.STOP.value}'
 
-        self.navigate.stop()
+        stopFn()
 
         endTime = datetime.now()
         timeString = endTime - startTime
@@ -248,6 +252,20 @@ class PathManagement:
         elif direction == f'{Commands.CW.value}':
             self.navigate.cw()
             return "CW"
+
+    def getArmMovement(self, data):
+        if data == f'{Commands.ARM_UP.value}':
+            self.arm.startStepper(1, 'B')
+            return "arm_up"
+        elif data == f'{Commands.ARM_DOWN.value}':
+            self.arm.startStepper(1, 'F')
+            return "arm_down"
+        elif data == f'{Commands.ARM_FORWARD.value}':
+            self.arm.startStepper(0, 'F')
+            return "arm_forward"
+        elif data == f'{Commands.ARM_BACKWARD.value}':
+            self.arm.startStepper(0, 'B')
+            return "arm_back"
 
     def reversePath(self):
         while self.numLines != 0:
