@@ -23,6 +23,10 @@ MAX_VOLT_THRESH = 4.2
 MIN_VOLT_THRESH = 3.2#4.158 # 2 * 0.99
 DISCHARGE_TOL = 1.01 # 1% Tolerance
 
+GAUGE_BASE_ADDR = 0x34
+VOLT_REG_MSB = 0x0C
+CELL_GPIO_EN = [12, 16, 20, 21]
+
 # Array of bools for each degree; True if an object is within DIST_THRESH
 lidarData = [False] * 360
 
@@ -30,15 +34,28 @@ def init():
 
     global Uart
     global Lidar
+    global I2c
     Uart = UART(lidar.PORT, lidar.BAUD)
     Lidar = lidar.Lidar(Uart)
+    I2c = i2c.I2C(1)
     global obstruction
     obstruction = False
-    print(Lidar)
+    #print(Lidar)
     #I2c = i2c.I2C(i2c.MAIN_CHANNEL)
     #Charger = BMS.Charger(I2c)
-    #for i in range(BMS.NUM_CELLS)
+    #for i in 
+    # range(BMS.NUM_CELLS)
         #Cells[i] = BMS.Cell(i, enPin[i], I2c)
+
+def readCellVoltages():
+    voltages = [0] * 4
+    for i in range(NUM_CELLS):
+        rawData = I2c.read_word(GAUGE_BASE_ADDR, VOLT_REG_MSB)
+        rawData = rawData << 8 & 0xFF00 | rawData >> 8
+        rawData >>= 5
+        voltages[i] = rawData * 4.88
+
+    return voltages
 
 def getAnglesFromDirection():
     if global_vars.WallyDirection == 'B':
@@ -132,10 +149,9 @@ def CellRebalance():
         #time.sleep(0.5)
 
 def CellMonitor():
-    #voltage = [0] * 4
+    voltages = readCellVoltages()
     for i in range(NUM_CELLS):
-        voltage = Cells[i].readVoltage()
-        if voltage < MIN_VOLT_THRESH:
+        if voltages[i] < MIN_VOLT_THRESH:
             #Notify App
             pass
     
