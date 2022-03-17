@@ -15,11 +15,11 @@ def workspaceBoundsCheck(p_sc=None,p_s1=None,*args,**kwargs):
     nargin = workspaceBoundsCheck.nargin
 
     #define lengths of arm links in m
-    L1=0.31685
+    L1=0.258
 # workspaceBoundsCheck.m:8
-    L2=0.25
+    L2=0.191
 # workspaceBoundsCheck.m:9
-    L3=0.15352
+    L3=0.153521
 # workspaceBoundsCheck.m:10
     
     R1=L1 - L2
