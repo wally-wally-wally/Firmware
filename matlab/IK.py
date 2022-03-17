@@ -43,11 +43,11 @@ def IK(p_sc=None,*args,**kwargs):
     success=0
 # IK.m:32
     
-    L1=0.31685
+    L1=0.258
 # IK.m:35
-    L2=0.25
+    L2=0.191
 # IK.m:36
-    L3=0.15352
+    L3=0.153521
 # IK.m:37
     
     x_s1=0
