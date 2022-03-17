@@ -43,10 +43,10 @@ class PathManagement:
 
     INCREMENT = 0.05
 
-    def __init__(self, bleObject, navigationObject, cameraObject): #add arm object
+    def __init__(self, bleObject, navigationObject): #add cam, and arm object
         self.ble = bleObject
         self.navigate = navigationObject
-        self.camera = cameraObject
+        #self.camera = cameraObject
         #self.arm = armObject
         self.armMoving = False
         self.numLines = 0
@@ -135,24 +135,24 @@ class PathManagement:
         self.numLines += 1
 
     def atHomeBase(self):
-        time.sleep(0.5)
-        self.camera.capture("home")
-        if not aruco.getIds("home"):
-            print("No aruco marker found. Reversing path back to home base.")
-            self.reversePath()
-            self.pathFile.writeLine("end", "0")
-        else:
-            self.numLines = 0
-            self.pathFile.openAppend()
-            self.pathFile.writeLine("end", "0")
+        #time.sleep(0.5)
+        #self.camera.capture("home")
+        #if not aruco.getIds("home"):
+        print("No aruco marker found. Reversing path back to home base.")
+        self.reversePath()
+        self.pathFile.writeLine("end", "0")
+        #else:
+        #    self.numLines = 0
+        #    self.pathFile.openAppend()
+        #    self.pathFile.writeLine("end", "0")
 
     def setCheckpoint(self):
-        time.sleep(0.5)
-        self.camera.capture("checkpoint")
-        if not aruco.getIds("checkpoint"):
-            print("Error: no aruco marker found. Can't set checkpoint here")
-            self.ble.write(f"0\n") #no aruco
-        else:
+        #time.sleep(0.5)
+        #self.camera.capture("checkpoint")
+        #if not aruco.getIds("checkpoint"):
+        #    print("Error: no aruco marker found. Can't set checkpoint here")
+        #    self.ble.write(f"0\n") #no aruco
+        if True: #else:
             self.ble.write(f"1\n") #found aruco
             data = self.ble.read()
 
