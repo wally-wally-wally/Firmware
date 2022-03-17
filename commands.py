@@ -18,7 +18,7 @@ class Commands(IntEnum):
     ARM_RIGHT = 11
     ARM_FORWARD = 12
     ARM_BACKWARD = 13
-    SET_CHEKPOINT = 14
+    SET_CHECKPOINT = 14
 
     #Task Controls
     START_RECORDING = 15

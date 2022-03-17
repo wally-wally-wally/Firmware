@@ -1,7 +1,7 @@
 import path
 import BLE
 import BLDC
-import camera
+#import camera
 #import arm
 import global_vars
 from commands import Commands
