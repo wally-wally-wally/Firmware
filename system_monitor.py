@@ -1,6 +1,7 @@
 import threading
 import time
 import global_vars
+#import GPIO
 #import BMS
 
 from uart import UART
@@ -11,7 +12,7 @@ import lidar
 #CollisionDetected = False
 #CollisionEvent = threading.Event()
 
-I2c = None
+#I2c = None
 #Charger = None
 Cells = [None] * 4
 
@@ -23,10 +24,6 @@ MAX_VOLT_THRESH = 4.2
 MIN_VOLT_THRESH = 3.2#4.158 # 2 * 0.99
 DISCHARGE_TOL = 1.01 # 1% Tolerance
 
-GAUGE_BASE_ADDR = 0x34
-VOLT_REG_MSB = 0x0C
-CELL_GPIO_EN = [12, 16, 20, 21]
-
 # Array of bools for each degree; True if an object is within DIST_THRESH
 lidarData = [False] * 360
 
@@ -37,9 +34,12 @@ def init():
     global I2c
     Uart = UART(lidar.PORT, lidar.BAUD)
     Lidar = lidar.Lidar(Uart)
-    I2c = i2c.I2C(1)
+#    I2c = i2c.I2C(1)
     global obstruction
     obstruction = False
+#    GPIO.init()
+#    for i in range(NUM_CELLS):
+#        GPIO.setPin(CELL_GPIO_EN[i], 'OUT', 'NONE')
     #print(Lidar)
     #I2c = i2c.I2C(i2c.MAIN_CHANNEL)
     #Charger = BMS.Charger(I2c)
@@ -47,25 +47,15 @@ def init():
     # range(BMS.NUM_CELLS)
         #Cells[i] = BMS.Cell(i, enPin[i], I2c)
 
-def readCellVoltages():
-    voltages = [0] * 4
-    for i in range(NUM_CELLS):
-        rawData = I2c.read_word(GAUGE_BASE_ADDR, VOLT_REG_MSB)
-        rawData = rawData << 8 & 0xFF00 | rawData >> 8
-        rawData >>= 5
-        voltages[i] = rawData * 4.88
-
-    return voltages
-
 def getAnglesFromDirection():
     if global_vars.WallyDirection == 'B':
-        return -45, 45
+        return -40, 40
     elif global_vars.WallyDirection == 'L':
-        return 45, 135
+        return 50, 130
     elif global_vars.WallyDirection == 'F':
-        return 135, 225
+        return 140, 220
     elif global_vars.WallyDirection == 'R':
-        return 225, 315
+        return 230, 310
     elif global_vars.WallyDirection == 'N':
         return 0, 0
 
@@ -148,14 +138,6 @@ def CellRebalance():
         
         #time.sleep(0.5)
 
-def CellMonitor():
-    voltages = readCellVoltages()
-    for i in range(NUM_CELLS):
-        if voltages[i] < MIN_VOLT_THRESH:
-            #Notify App
-            pass
-    
-
 def sysMon():
     init()
 #    print('sysmon', flush=True)
@@ -174,5 +156,9 @@ def sysMon():
 
 if __name__ == '__main__':
     global_vars.init()
-    sysMon()
+    init()
+    while True:
+        print(readCellVoltages())        
+        time.sleep(1)
+    #sysMon()
 
