@@ -19,7 +19,7 @@ class Arm():
     def __init__(self):
         self.currentAngle = [0] * NUM_STEPPERS
         self.currentPosition = [0] * 2 # x, y
-        self.isOpen = False
+        self.gripperOpen = False
         self.stepper = [0] * NUM_STEPPERS
         self.gripper = gripper.Gripper()
         for i in range(NUM_STEPPERS):
