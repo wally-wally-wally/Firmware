@@ -35,11 +35,11 @@ class Arm():
 
     # x, y: x and y coordinates to move the arm relative to the base of the arm in metres. 
     def move(self, x, y):
-        print('moving:', flush = True)
+        #print('moving:', flush = True)
         angles, _, success = IK([x,y,0])
-        print('success' + str(success), flush=True)
-        print('angle:')
-        print(angles)
+        ##print('success' + str(success), flush=True)
+        #print('angle:')
+        #print(angles)
         if success == 1:
             return 
         for i in range(NUM_STEPPERS):
@@ -54,6 +54,17 @@ class Arm():
             self.currentAngle[i] = self.currentAngle[i] + angles[i][0]
 
         self.currentPosition = [x, y]
+
+    def startStepper(self, stepperIdx, dir):
+        if dir == 'F':
+            rotationDirection = FORWARD_DIRECTION[i]
+        else:
+            rotationDirection = BACKWARD_DIRECTION[i]
+        self.stepper[stepperIdx].setDirection(rotationDirection)
+        self.stepper[stepperIdx].startStepper()
+
+    def stopStepper(self, stepperIdx):
+        self.stepper[stepperIdx].stopStepper()
 
     def openGrip(self):
         self.gripper.open()
