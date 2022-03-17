@@ -39,6 +39,11 @@ class Stepper:
         else:
             raise ValueError("Could not set stepper motor direction, expected either: 'CW' or 'CCW'")
 
+    def rotate_time(self, delay):
+        self.startStepper()
+        time.sleep(delay)
+        self.stopStepper()
+
     def rotate(self, degrees):        #degrees of rotation - home state is 45
         if degrees < 0:
             raise ValueError("Degrees is too low, please set it to a value between 0 and 360")
