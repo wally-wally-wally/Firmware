@@ -56,7 +56,7 @@ class Arm():
         self.gripperOpen = False
 
     def isOpen(self):
-        return self.isOpen
+        return self.gripperOpen
 
     def getCurrentPosition(self):
         return self.currentPosition
