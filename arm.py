@@ -63,8 +63,9 @@ class Arm():
         self.stepper[stepperIdx].setDirection(rotationDirection)
         self.stepper[stepperIdx].startStepper()
 
-    def stopStepper(self, stepperIdx):
-        self.stepper[stepperIdx].stopStepper()
+    def stopSteppers(self):
+        self.stepper[0].stopStepper()
+        self.stepper[1].stopStepper()
 
     def openGrip(self):
         self.gripper.open()
